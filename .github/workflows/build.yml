@@ -1,0 +1,67 @@
+name: Build and Publish
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build-and-publish:
+    name: "Build and Publish"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+      - name: Install Dependencies
+        run: |
+          corepack enable
+          pnpm i --frozen-lockfile
+      - name: Build
+        run: |
+          pnpm compile
+          for PACKAGE in packages/client-component-transforms packages/server-function-transforms packages/framework; do
+            pushd $PACKAGE
+            pnpm lint
+            popd
+          done
+      - name: Push to GitHub
+        if: github.event_name != 'pull_request'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          export PACKAGE_NAMESPACE=$GITHUB_REPOSITORY_OWNER
+
+          # set repository
+          for PACKAGE_JSON in packages/*/package.json; do jq ".repository |= \"https://github.com/$GITHUB_REPOSITORY\"" $PACKAGE_JSON > $PACKAGE_JSON.tmp; mv $PACKAGE_JSON.tmp $PACKAGE_JSON; done
+
+          # rename package versions
+          export PACKAGE_VERSION_SUFFIX="dev.$(date +%Y.%m.%d.%H.%M.%S)+$(git rev-parse --short HEAD)"
+          for PACKAGE_JSON in packages/*/package.json; do jq ".version |= (match(\"^([0-9.]+)\").captures[0].string + \"-$PACKAGE_VERSION_SUFFIX\")" $PACKAGE_JSON > $PACKAGE_JSON.tmp; mv $PACKAGE_JSON.tmp $PACKAGE_JSON; done
+
+          # rename package names
+          for PACKAGE_JSON in packages/*/package.json; do jq ".name |= sub(\"@twofold\"; \"@$PACKAGE_NAMESPACE\")" $PACKAGE_JSON > $PACKAGE_JSON.tmp; mv $PACKAGE_JSON.tmp $PACKAGE_JSON; done
+
+          # rename package references
+          for PACKAGE_JSON in packages/*/package.json; do jq ".dependencies |= (to_entries | map({key: (.key | sub(\"@twofold/\"; \"@$PACKAGE_NAMESPACE/\")), value: .value}) | from_entries)" $PACKAGE_JSON > $PACKAGE_JSON.tmp; mv $PACKAGE_JSON.tmp $PACKAGE_JSON; done
+
+          # compile and package again
+          #   PACKAGE_NAMESPACE is read by compile.js and rewrites imports
+          #   in built code once compiled
+          pnpm compile
+          pnpm -r exec pnpm pack
+
+          # set npmrc to auth with GitHub
+          cat >.npmrc <<EOF
+          //npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
+          @{GITHUB_REPOSITORY_OWNER}:registry=https://npm.pkg.github.com/
+          always-auth=true
+          EOF
+
+          # push packages
+          for TARBALL in $(find packages/ -name *.tgz); do
+            pnpm publish $TARBALL
+          done
