@@ -57,11 +57,20 @@ jobs:
           for PACKAGE_JSON in $PACKAGE_JSON_FILES; do jq ".name |= sub(\"eslint-plugin-twofold\"; \"@$PACKAGE_NAMESPACE/eslint-plugin-twofold\")" $PACKAGE_JSON > $PACKAGE_JSON.tmp; mv $PACKAGE_JSON.tmp $PACKAGE_JSON; done
 
           # rename package references
-          for PACKAGE_JSON in $PACKAGE_JSON_FILES; do jq ".dependencies = (.dependencies // {}) | (to_entries | map({key: (.key | sub(\"@twofold/\"; \"@$PACKAGE_NAMESPACE/\")), value: .value}) | from_entries)" $PACKAGE_JSON > $PACKAGE_JSON.tmp; mv $PACKAGE_JSON.tmp $PACKAGE_JSON; cat $PACKAGE_JSON; done
+          for PACKAGE_JSON in $PACKAGE_JSON_FILES; do 
+            if [[ "$PACKAGE_JSON" == "./package.json" ]]; then
+              continue
+            fi
+            jq ".dependencies |= (to_entries | map({key: (.key | sub(\"@twofold/\"; \"@$PACKAGE_NAMESPACE/\")), value: .value}) | from_entries)" $PACKAGE_JSON > $PACKAGE_JSON.tmp; 
+            mv $PACKAGE_JSON.tmp $PACKAGE_JSON; 
+            cat $PACKAGE_JSON; 
+          done
 
           # compile and package again
           #   PACKAGE_NAMESPACE is read by compile.js and rewrites imports
           #   in built code once compiled
+          git clean -xdf
+          pnpm install --no-frozen-lockfile
           pnpm compile
 
           # publish packages
