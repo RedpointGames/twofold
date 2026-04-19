@@ -1,4 +1,4 @@
-import { Config } from "@twofold/framework/types";
+import { Config } from "@redpointgames/framework/types";
 
 const config: Config = {
   trustProxy: true,

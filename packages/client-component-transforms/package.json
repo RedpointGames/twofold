@@ -1,5 +1,5 @@
 {
-  "name": "@twofold/client-component-transforms",
+  "name": "@redpointgames/client-component-transforms",
   "version": "0.0.8",
   "description": "Transform components into React Client Components",
   "type": "module",

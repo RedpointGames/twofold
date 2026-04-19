@@ -9,7 +9,7 @@ To use the `useRouter` hook:
 ```tsx
 "use client";
 
-import { useRouter } from "@twofold/framework/use-router";
+import { useRouter } from "@redpointgames/framework/use-router";
 
 export default function ClientComponent() {
   let router = useRouter();
@@ -27,7 +27,7 @@ Programmatic navigation can be achieved by calling the `navigate` or `replace` f
 ```tsx
 "use client";
 
-import { useRouter } from "@twofold/framework/use-router";
+import { useRouter } from "@redpointgames/framework/use-router";
 import { useEffect } from "react";
 
 export default function ClientComponent() {
@@ -48,7 +48,7 @@ The `replace` function from `useRouter` can be used instead of `navigate`. The o
 ```tsx
 "use client";
 
-import { useRouter } from "@twofold/framework/use-router";
+import { useRouter } from "@redpointgames/framework/use-router";
 import { useEffect } from "react";
 
 export default function ClientComponent() {
@@ -69,7 +69,7 @@ The `refresh` function from `useRouter` is used to refresh the current page and 
 ```tsx
 "use client";
 
-import { useRouter } from "@twofold/framework/use-router";
+import { useRouter } from "@redpointgames/framework/use-router";
 import { useEffect } from "react";
 
 export default function ClientComponent() {
@@ -88,7 +88,7 @@ The functions and values returned by `useRouter`:
 ```tsx
 "use client";
 
-import { useRouter } from "@twofold/framework/use-router";
+import { useRouter } from "@redpointgames/framework/use-router";
 
 function ClientComponent() {
   let { path, searchParams, navigate, replace, refresh } = useRouter();

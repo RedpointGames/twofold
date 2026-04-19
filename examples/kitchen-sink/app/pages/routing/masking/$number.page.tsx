@@ -1,7 +1,7 @@
-import Link from "@twofold/framework/link";
-import { PageProps } from "@twofold/framework/types";
+import Link from "@redpointgames/framework/link";
+import { PageProps } from "@redpointgames/framework/types";
 import { SelectedNumber } from "./selected-number";
-import { notFound } from "@twofold/framework/not-found";
+import { notFound } from "@redpointgames/framework/not-found";
 
 export default function MaskingPage({ params }: PageProps<"number">) {
   const number = parseInt(params.number);

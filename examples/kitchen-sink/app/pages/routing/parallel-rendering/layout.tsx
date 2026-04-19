@@ -1,4 +1,4 @@
-import { LayoutProps } from "@twofold/framework/types";
+import { LayoutProps } from "@redpointgames/framework/types";
 
 export default async function Layout({ children }: LayoutProps) {
   await new Promise((resolve) => setTimeout(resolve, 2000));

@@ -1,5 +1,5 @@
-import { AuthPolicyArray, reset } from "@twofold/framework/auth";
-import { getValueFromAuthCache } from "@twofold/framework/auth-server";
+import { AuthPolicyArray, reset } from "@redpointgames/framework/auth";
+import { getValueFromAuthCache } from "@redpointgames/framework/auth-server";
 
 export const auth: AuthPolicyArray = [reset];
 

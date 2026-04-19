@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import "./global.css";
 import InterFont from "@/public/fonts/inter-var-latin.woff2";
-import TwofoldFramework from "@twofold/framework/twofold-framework";
+import TwofoldFramework from "@redpointgames/framework/twofold-framework";
 import { EnterDocs } from "./enter-docs";
 import FavIcon from "@/public/favicon.png";
 

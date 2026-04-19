@@ -1,4 +1,4 @@
-import { PageProps } from "@twofold/framework/types";
+import { PageProps } from "@redpointgames/framework/types";
 import { EnterDocsLink } from "./enter-docs";
 import clsx from "clsx";
 

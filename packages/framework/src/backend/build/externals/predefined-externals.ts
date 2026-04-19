@@ -8,7 +8,7 @@ export const excludePackages = [
   // icon libraries
   "@heroicons/react",
   // twofold libraries
-  "@twofold/framework/encryption",
+  "@redpointgames/framework/encryption",
   // cjs unable to bundle
   // from next.js: https://github.com/vercel/next.js/blob/canary/packages/next/src/lib/server-external-packages.json
   // thank you next!
@@ -74,4 +74,4 @@ export const excludePackages = [
   "zeromq",
 ];
 
-export const bundlePackages = ["@twofold/framework"];
+export const bundlePackages = ["@redpointgames/framework"];

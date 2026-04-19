@@ -12,7 +12,7 @@ let version = packageJson.version;
 
 let plugin = {
   meta: {
-    name: "eslint-plugin-twofold",
+    name: "@redpointgames/eslint-plugin-twofold",
     version,
   },
   configs: {

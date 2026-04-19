@@ -1,5 +1,5 @@
-import { flash } from "@twofold/framework/flash";
-import { redirect } from "@twofold/framework/redirect";
+import { flash } from "@redpointgames/framework/flash";
+import { redirect } from "@redpointgames/framework/redirect";
 import { ClientForm } from "./client-form";
 import { ObjectFlash } from "./object-flash";
 

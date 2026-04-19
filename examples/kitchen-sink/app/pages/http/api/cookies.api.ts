@@ -1,5 +1,5 @@
-import cookies from "@twofold/framework/cookies";
-import { APIProps } from "@twofold/framework/types";
+import cookies from "@redpointgames/framework/cookies";
+import { APIProps } from "@redpointgames/framework/types";
 
 export function GET() {
   let data = {

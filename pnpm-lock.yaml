@@ -44,7 +44,7 @@ importers:
 
   examples/base-app:
     dependencies:
-      '@twofold/framework':
+      '@redpointgames/framework':
         specifier: workspace:*
         version: link:../../packages/framework
       client-only:
@@ -69,6 +69,9 @@ importers:
         specifier: 4.1.11
         version: 4.1.11
     devDependencies:
+      '@redpointgames/eslint-plugin-twofold':
+        specifier: workspace:*
+        version: link:../../packages/eslint-plugin-twofold
       '@types/node':
         specifier: 'catalog:'
         version: 22.19.17
@@ -81,9 +84,6 @@ importers:
       eslint:
         specifier: ^9.38.0
         version: 9.39.4(jiti@2.6.1)
-      eslint-plugin-twofold:
-        specifier: workspace:*
-        version: link:../../packages/eslint-plugin-twofold
       prettier:
         specifier: ^3.6.2
         version: 3.8.3
@@ -105,7 +105,7 @@ importers:
       '@radix-ui/react-toast':
         specifier: ^1.2.15
         version: 1.2.15(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
-      '@twofold/framework':
+      '@redpointgames/framework':
         specifier: workspace:*
         version: link:../../packages/framework
       clsx:
@@ -139,6 +139,9 @@ importers:
         specifier: ^4.1.11
         version: 4.1.11
     devDependencies:
+      '@redpointgames/eslint-plugin-twofold':
+        specifier: workspace:*
+        version: link:../../packages/eslint-plugin-twofold
       '@types/node':
         specifier: 'catalog:'
         version: 22.19.17
@@ -151,9 +154,6 @@ importers:
       eslint:
         specifier: ^9.38.0
         version: 9.39.4(jiti@2.6.1)
-      eslint-plugin-twofold:
-        specifier: workspace:*
-        version: link:../../packages/eslint-plugin-twofold
       nodemon:
         specifier: ^3.1.10
         version: 3.1.14
@@ -288,6 +288,12 @@ importers:
       '@hattip/static':
         specifier: ^0.0.49
         version: 0.0.49
+      '@redpointgames/client-component-transforms':
+        specifier: workspace:*
+        version: link:../client-component-transforms
+      '@redpointgames/server-function-transforms':
+        specifier: workspace:*
+        version: link:../server-function-transforms
       '@ryanto/esbuild-plugin-tailwind':
         specifier: ^0.0.3
         version: 0.0.3(esbuild@0.27.2)(tailwindcss@4.2.2)
@@ -297,12 +303,6 @@ importers:
       '@tailwindcss/oxide':
         specifier: 4.1.14
         version: 4.1.14
-      '@twofold/client-component-transforms':
-        specifier: workspace:*
-        version: link:../client-component-transforms
-      '@twofold/server-function-transforms':
-        specifier: workspace:*
-        version: link:../server-function-transforms
       babel-plugin-react-compiler:
         specifier: 19.1.0-rc.3
         version: 19.1.0-rc.3
@@ -485,6 +485,9 @@ importers:
       '@radix-ui/react-tabs':
         specifier: ^1.1.13
         version: 1.1.13(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      '@redpointgames/framework':
+        specifier: workspace:*
+        version: link:../../packages/framework
       '@shikijs/transformers':
         specifier: ^3.13.0
         version: 3.23.0
@@ -494,9 +497,6 @@ importers:
       '@tailwindcss/typography':
         specifier: ^0.5.19
         version: 0.5.19(tailwindcss@4.2.2)
-      '@twofold/framework':
-        specifier: workspace:*
-        version: link:../../packages/framework
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -537,6 +537,9 @@ importers:
         specifier: ^4.1.11
         version: 4.1.11
     devDependencies:
+      '@redpointgames/eslint-plugin-twofold':
+        specifier: workspace:*
+        version: link:../../packages/eslint-plugin-twofold
       '@types/js-yaml':
         specifier: ^4.0.9
         version: 4.0.9
@@ -552,9 +555,6 @@ importers:
       eslint:
         specifier: ^9.38.0
         version: 9.39.4(jiti@2.6.1)
-      eslint-plugin-twofold:
-        specifier: workspace:*
-        version: link:../../packages/eslint-plugin-twofold
       nodemon:
         specifier: ^3.1.9
         version: 3.1.14

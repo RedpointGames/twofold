@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "@twofold/framework/link";
+import Link from "@redpointgames/framework/link";
 
 export default function CustomNotFoundError() {
   return (

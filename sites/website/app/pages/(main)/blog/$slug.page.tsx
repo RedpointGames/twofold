@@ -1,6 +1,6 @@
 import Markdoc, { RenderableTreeNodes } from "@markdoc/markdoc";
-import Link from "@twofold/framework/link";
-import { PageProps } from "@twofold/framework/types";
+import Link from "@redpointgames/framework/link";
+import { PageProps } from "@redpointgames/framework/types";
 import React, { ComponentType } from "react";
 import { loadComponents, loadContent, loadMetadata } from "./data-layer/posts";
 import { getTitle } from "../../../markdoc/utils";

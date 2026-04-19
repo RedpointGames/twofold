@@ -1,6 +1,6 @@
-import { LayoutProps } from "@twofold/framework/types";
+import { LayoutProps } from "@redpointgames/framework/types";
 import { Reveal } from "./reveal";
-import Link from "@twofold/framework/link";
+import Link from "@redpointgames/framework/link";
 
 export default function Layout(props: LayoutProps) {
   return (

@@ -1,5 +1,5 @@
 {
-  "name": "eslint-plugin-twofold",
+  "name": "@redpointgames/eslint-plugin-twofold",
   "version": "0.0.76",
   "description": "",
   "main": "index.js",

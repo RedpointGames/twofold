@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "@twofold/framework/link";
-import { useRouter } from "@twofold/framework/use-router";
+import Link from "@redpointgames/framework/link";
+import { useRouter } from "@redpointgames/framework/use-router";
 import { ReactNode } from "react";
 
 export function DocLink({

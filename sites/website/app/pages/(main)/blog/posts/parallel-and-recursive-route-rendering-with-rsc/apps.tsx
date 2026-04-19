@@ -1,8 +1,8 @@
 import { ReactNode, Suspense } from "react";
 import AlicePhoto from "./alice.avif";
-import cookies from "@twofold/framework/cookies";
-import pageContext from "@twofold/framework/context/page";
-import { flash } from "@twofold/framework/flash";
+import cookies from "@redpointgames/framework/cookies";
+import pageContext from "@redpointgames/framework/context/page";
+import { flash } from "@redpointgames/framework/flash";
 import * as z from "zod";
 import {
   DemoBrowser,
@@ -14,7 +14,7 @@ import {
 } from "./apps-client";
 import Spinner from "@/app/components/spinner";
 import clsx from "clsx";
-import Link from "@twofold/framework/link";
+import Link from "@redpointgames/framework/link";
 import invariant from "tiny-invariant";
 
 export function DemoApp() {

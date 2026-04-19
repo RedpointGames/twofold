@@ -9,7 +9,7 @@ Cookies can be read in Twofold using the cookies module:
 ```tsx
 // app/pages/index.page.tsx
 
-import cookies from "@twofold/framework/cookies";
+import cookies from "@redpointgames/framework/cookies";
 
 export default function IndexPage() {
   // Read the value of a cookie
@@ -30,7 +30,7 @@ To set cookies in Twofold, use the `set()` function:
 ```tsx
 // app/pages/index.page.tsx
 
-import cookies from "@twofold/framework/cookies";
+import cookies from "@redpointgames/framework/cookies";
 
 async function setCookie() {
   "use server";
@@ -53,7 +53,7 @@ Cookies should only be set in server actions or middleware. Setting cookies in p
 ```tsx
 // app/pages/index.page.tsx
 
-import cookies from "@twofold/framework/cookies";
+import cookies from "@redpointgames/framework/cookies";
 
 export function before() {
   // ✅ Allowed: Set cookies in middleware
@@ -90,7 +90,7 @@ To remove cookies in Twofold, use the `destroy()` function.
 ```tsx
 // app/pages/index.page.tsx
 
-import cookies from "@twofold/framework/cookies";
+import cookies from "@redpointgames/framework/cookies";
 
 async function destroyCookie() {
   "use server";
@@ -123,7 +123,7 @@ To set an encrypted cookie, use the asynchronous `cookies.encrypted.set()` funct
 ```tsx
 // app/pages/index.page.tsx
 
-import cookies from "@twofold/framework/cookies";
+import cookies from "@redpointgames/framework/cookies";
 
 async function setCookie() {
   "use server";
@@ -152,7 +152,7 @@ To retrieve the value of an encrypted cookie, use the asynchronous `cookies.encr
 ```tsx
 // app/pages/index.page.tsx
 
-import cookies from "@twofold/framework/cookies";
+import cookies from "@redpointgames/framework/cookies";
 
 export default async function Page() {
   // Read the value of an encrypted cookie
@@ -171,7 +171,7 @@ If the cookie does not exist or has been tampered with, `cookies.encrypted.get()
 Encrypted cookies in Twofold can store more than just strings — they support any serializable value, including objects and arrays. This is useful for securely handling complex data structures like user profiles, preferences, or session data.
 
 ```tsx
-import cookies from "@twofold/framework/cookies";
+import cookies from "@redpointgames/framework/cookies";
 
 await cookies.encrypted.set("features", ["new-ui", "beta-user"]);
 await cookies.encrypted.set("user", { id: 1, name: "Alice" });
@@ -194,7 +194,7 @@ Encrypted cookies are securely stored in the browser but are designed to be unre
 Consider the following example:
 
 ```tsx
-import cookies from "@twofold/framework/cookies";
+import cookies from "@redpointgames/framework/cookies";
 
 // Set an encrypted cookie
 await cookies.encrypted.set("name", "value");
@@ -218,7 +218,7 @@ Similar to regular cookies, encrypted cookies can be destroyed using the `cookie
 ```tsx
 // app/pages/index.page.tsx
 
-import cookies from "@twofold/framework/cookies";
+import cookies from "@redpointgames/framework/cookies";
 
 async function destroyCookie() {
   "use server";

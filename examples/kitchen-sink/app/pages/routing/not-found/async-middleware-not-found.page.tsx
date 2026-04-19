@@ -1,4 +1,4 @@
-import { notFound } from "@twofold/framework/not-found";
+import { notFound } from "@redpointgames/framework/not-found";
 
 export async function before() {
   await new Promise((resolve) => setTimeout(resolve, 1000));

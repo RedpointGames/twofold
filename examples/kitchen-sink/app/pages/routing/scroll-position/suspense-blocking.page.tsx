@@ -1,4 +1,4 @@
-import Link from "@twofold/framework/link";
+import Link from "@redpointgames/framework/link";
 
 export default async function Page() {
   await new Promise((resolve) => setTimeout(resolve, 1000));

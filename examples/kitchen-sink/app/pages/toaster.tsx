@@ -1,6 +1,6 @@
 "use client";
 
-import { useFlash } from "@twofold/framework/flash";
+import { useFlash } from "@redpointgames/framework/flash";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import * as RadixToast from "@radix-ui/react-toast";
 import { AnimatePresence, motion } from "motion/react";

@@ -1,4 +1,4 @@
-import { APIProps } from "@twofold/framework/types";
+import { APIProps } from "@redpointgames/framework/types";
 
 export function GET() {
   let data = {

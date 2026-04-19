@@ -7,7 +7,7 @@ import * as path from "path";
 import {
   transform as serverFunctionTransform,
   envKey,
-} from "@twofold/server-function-transforms";
+} from "@redpointgames/server-function-transforms";
 import { getModuleId } from "../helpers/module.js";
 import { pathToLanguage } from "../helpers/languages.js";
 import { shouldIgnoreUseServer } from "../helpers/excluded.js";
@@ -65,7 +65,7 @@ export function serverActionsPlugin({ builder }: { builder: RSCBuilder }) {
             },
             encryption: {
               key: envKey("TWOFOLD_SECRET_KEY"),
-              module: "@twofold/framework/encryption",
+              module: "@redpointgames/framework/encryption",
             },
             moduleId,
           });

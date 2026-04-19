@@ -1,7 +1,7 @@
-import TwofoldFramework from "@twofold/framework/twofold-framework";
+import TwofoldFramework from "@redpointgames/framework/twofold-framework";
 import InterFont from "@/public/fonts/inter-var-latin.woff2";
 import { Toaster } from "@/app/components/toaster";
-import { LayoutProps } from "@twofold/framework/types";
+import { LayoutProps } from "@redpointgames/framework/types";
 import "./global.css";
 
 export default function Layout({ children }: LayoutProps) {

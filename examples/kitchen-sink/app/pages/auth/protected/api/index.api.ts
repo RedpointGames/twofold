@@ -1,6 +1,6 @@
 import { behaveBasedOnQueryString } from "@/app/auth";
-import { AuthPolicyArray } from "@twofold/framework/auth";
-import { getValueFromAuthCache } from "@twofold/framework/auth-server";
+import { AuthPolicyArray } from "@redpointgames/framework/auth";
+import { getValueFromAuthCache } from "@redpointgames/framework/auth-server";
 
 export const auth: AuthPolicyArray = [behaveBasedOnQueryString];
 

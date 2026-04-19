@@ -1,5 +1,5 @@
 {
-  "name": "create-twofold-app",
+  "name": "@redpointgames/create-twofold-app",
   "version": "0.0.18",
   "description": "",
   "main": "dist/index.js",

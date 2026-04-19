@@ -9,7 +9,7 @@ Links can be rendered by both server and client components.
 ```tsx
 // app/pages/index.page.tsx
 
-import Link from "@twofold/framework/link";
+import Link from "@redpointgames/framework/link";
 
 export default function IndexPage() {
   return (

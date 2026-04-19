@@ -1,4 +1,4 @@
-import { redirect } from "@twofold/framework/redirect";
+import { redirect } from "@redpointgames/framework/redirect";
 
 export function before() {
   return redirect("/docs/guides/getting-started");

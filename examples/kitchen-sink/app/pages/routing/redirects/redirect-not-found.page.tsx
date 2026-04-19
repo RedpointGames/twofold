@@ -1,4 +1,4 @@
-import { redirect } from "@twofold/framework/redirect";
+import { redirect } from "@redpointgames/framework/redirect";
 
 export default function Page() {
   redirect("/routing/redirects/this-page-doesnt-exist");

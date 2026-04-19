@@ -1,4 +1,4 @@
-import { redirect } from "@twofold/framework/redirect";
+import { redirect } from "@redpointgames/framework/redirect";
 
 export default async function Page() {
   await new Promise((resolve) => setTimeout(resolve, 1000));

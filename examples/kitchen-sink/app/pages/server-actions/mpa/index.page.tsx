@@ -1,9 +1,9 @@
-import { PageProps } from "@twofold/framework/types";
+import { PageProps } from "@redpointgames/framework/types";
 import { logFromActionFile } from "./actions";
 import { FormWithClientState, State } from "./form-with-client-state";
 import { FormWithServerState } from "./form-with-server-state";
-import Link from "@twofold/framework/link";
-import { redirect } from "@twofold/framework/redirect";
+import Link from "@redpointgames/framework/link";
+import { redirect } from "@redpointgames/framework/redirect";
 
 let state = { count: 0 };
 

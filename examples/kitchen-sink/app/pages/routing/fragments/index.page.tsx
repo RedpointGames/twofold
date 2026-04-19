@@ -1,4 +1,4 @@
-import Link from "@twofold/framework/link";
+import Link from "@redpointgames/framework/link";
 import { ClientPath } from "./client-path";
 import { RefreshButton } from "./refresh-button";
 

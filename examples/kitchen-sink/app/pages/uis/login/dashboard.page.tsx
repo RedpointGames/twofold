@@ -1,5 +1,5 @@
-import cookies from "@twofold/framework/cookies";
-import { redirect } from "@twofold/framework/redirect";
+import cookies from "@redpointgames/framework/cookies";
+import { redirect } from "@redpointgames/framework/redirect";
 
 export async function before() {
   let auth = await cookies.encrypted.get("auth");

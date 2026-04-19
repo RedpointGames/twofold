@@ -1,4 +1,4 @@
-import Link from "@twofold/framework/link";
+import Link from "@redpointgames/framework/link";
 import { getPosts } from "./data-layer/posts";
 
 export default async function BlogPage() {

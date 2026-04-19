@@ -1,4 +1,4 @@
-import { PageProps } from "@twofold/framework/types";
+import { PageProps } from "@redpointgames/framework/types";
 
 export default function RequestForwardingPage({ request }: PageProps) {
   let url = new URL(request.url);

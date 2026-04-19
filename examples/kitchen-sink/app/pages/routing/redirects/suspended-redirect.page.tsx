@@ -1,4 +1,4 @@
-import { redirect } from "@twofold/framework/redirect";
+import { redirect } from "@redpointgames/framework/redirect";
 import { Suspense } from "react";
 
 export default function Page() {

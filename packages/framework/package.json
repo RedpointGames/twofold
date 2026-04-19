@@ -1,5 +1,5 @@
 {
-  "name": "@twofold/framework",
+  "name": "@redpointgames/framework",
   "version": "0.0.76",
   "description": "",
   "type": "module",
@@ -90,8 +90,8 @@
     "@ryanto/esbuild-plugin-tailwind": "^0.0.3",
     "@tailwindcss/node": "4.1.14",
     "@tailwindcss/oxide": "4.1.14",
-    "@twofold/client-component-transforms": "workspace:*",
-    "@twofold/server-function-transforms": "workspace:*",
+    "@redpointgames/client-component-transforms": "workspace:*",
+    "@redpointgames/server-function-transforms": "workspace:*",
     "babel-plugin-react-compiler": "19.1.0-rc.3",
     "chokidar": "^4.0.3",
     "client-only": "^0.0.1",

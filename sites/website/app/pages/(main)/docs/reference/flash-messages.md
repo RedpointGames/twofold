@@ -6,14 +6,14 @@ In Twofold, flash messages work in both server and client actions, support compl
 
 ## Creating messages
 
-To create flash messages from a server action, use the `flash` function from `@twofold/framework/flash`.
+To create flash messages from a server action, use the `flash` function from `@redpointgames/framework/flash`.
 
 For example, to display a success message after the user signs in:
 
 ```tsx
 // app/pages/index.page.tsx
 
-import { flash } from "@twofold/framework/flash";
+import { flash } from "@redpointgames/framework/flash";
 
 function signIn() {
   "use server";
@@ -43,7 +43,7 @@ Use the `useFlash` hook to display flash messages in your UI. Since it's reactiv
 ```tsx
 "use client";
 
-import { useFlash } from "@twofold/framework/flash";
+import { useFlash } from "@redpointgames/framework/flash";
 
 export function ToastMessages() {
   let { messages } = useFlash();
@@ -69,7 +69,7 @@ Flash messages can store any JSON-serializable value, allowing you to include ad
 ```tsx
 // app/pages/index.page.tsx
 
-import { flash } from "@twofold/framework/flash";
+import { flash } from "@redpointgames/framework/flash";
 
 function signIn() {
   "use server";
@@ -100,7 +100,7 @@ In a client component, `useFlash` has access to these structured messages. You c
 ```tsx
 "use client";
 
-import { useFlash } from "@twofold/framework/flash";
+import { useFlash } from "@redpointgames/framework/flash";
 
 export function ToastMessages() {
   let { messages } = useFlash();
@@ -137,7 +137,7 @@ For example, a server action can create multiple types of flash messages:
 ```tsx
 // app/pages/index.page.tsx
 
-import { flash } from "@twofold/framework/flash";
+import { flash } from "@redpointgames/framework/flash";
 
 function signIn() {
   "use server";
@@ -156,7 +156,7 @@ On the client, a schema ensures only specific messages are returned:
 ```tsx
 "use client";
 
-import { useFlash } from "@twofold/framework/flash";
+import { useFlash } from "@redpointgames/framework/flash";
 import * as z from "zod";
 
 export function SuccessMessages() {
@@ -197,7 +197,7 @@ To let users dismiss messages, use the `removeMessageById` function. The `messag
 ```tsx
 "use client";
 
-import { useFlash } from "@twofold/framework/flash";
+import { useFlash } from "@redpointgames/framework/flash";
 
 export function Messages() {
   let { messagesWithId, removeMessageById } = useFlash();
@@ -223,7 +223,7 @@ For messages that should disappear after a delay, use the `clearAfter` option:
 ```tsx
 "use client";
 
-import { useFlash } from "@twofold/framework/flash";
+import { useFlash } from "@redpointgames/framework/flash";
 
 export function Messages() {
   let { messages } = useFlash({

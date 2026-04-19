@@ -9,7 +9,7 @@ The configuration file exports an object that specifies the settings for your ap
 ```tsx
 // config/application.ts
 
-import { Config } from "@twofold/framework/types";
+import { Config } from "@redpointgames/framework/types";
 
 let config: Config = {
   // default configuration

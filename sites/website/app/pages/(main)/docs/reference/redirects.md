@@ -9,8 +9,8 @@ Redirect when rendering a page or layout:
 ```tsx
 // app/pages/posts/$slug.page.tsx
 
-import { redirect } from "@twofold/framework/redirect";
-import { PageProps } from "@twofold/framework/types";
+import { redirect } from "@redpointgames/framework/redirect";
+import { PageProps } from "@redpointgames/framework/types";
 import { db } from "./database";
 
 export default function PostPage({ slug }: PageProps<"slug">) {
@@ -42,7 +42,7 @@ Redirect from server actions:
 
 // app/pages/posts/mutations.ts
 
-import { redirect } from "@twofold/framework/redirect";
+import { redirect } from "@redpointgames/framework/redirect";
 import { db } from "./database";
 
 async function createPost(formData: FormData) {
@@ -69,8 +69,8 @@ Redirect from middleware:
 ```tsx
 // app/pages/posts/$slug.page.tsx
 
-import { redirect } from "@twofold/framework/redirect";
-import { PageProps } from "@twofold/framework/types";
+import { redirect } from "@redpointgames/framework/redirect";
+import { PageProps } from "@redpointgames/framework/types";
 
 export async function before({ params }: PageProps<"slug">) {
   if (params.slug === "old-post-slug") {

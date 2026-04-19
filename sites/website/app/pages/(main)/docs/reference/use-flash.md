@@ -9,7 +9,7 @@ To use the `useFlash` hook:
 ```tsx
 "use client";
 
-import { flash } from "@twofold/framework/flash";
+import { flash } from "@redpointgames/framework/flash";
 
 export default function ClientComponent() {
   let { messages } = useFlash();
@@ -49,7 +49,7 @@ The values returned by `useFlash`:
 ```tsx
 "use client";
 
-import { useFlash } from "@twofold/framework/use-flash";
+import { useFlash } from "@redpointgames/framework/use-flash";
 
 function ClientComponent() {
   let { messages, messagesWithId, removeMessageById } = useFlash();

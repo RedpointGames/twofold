@@ -1,6 +1,6 @@
 "use server";
 
-import cookies from "@twofold/framework/cookies";
+import cookies from "@redpointgames/framework/cookies";
 
 export async function rememberCliCommand(command: string) {
   cookies.set("cli-command", command, {

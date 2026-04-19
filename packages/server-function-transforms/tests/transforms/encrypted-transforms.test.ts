@@ -29,7 +29,7 @@ describe("encrypted captured variables", () => {
     });
 
     expect(result.code).toContain(
-      'import { encrypt as tf$encrypt, decrypt as tf$decrypt } from "@twofold/server-function-transforms";',
+      'import { encrypt as tf$encrypt, decrypt as tf$decrypt } from "@redpointgames/server-function-transforms";',
     );
 
     expect(result.code).toContain(
@@ -37,7 +37,7 @@ describe("encrypted captured variables", () => {
     );
 
     expect(result.code).toMatchInlineSnapshot(`
-      "import { encrypt as tf$encrypt, decrypt as tf$decrypt } from "@twofold/server-function-transforms";
+      "import { encrypt as tf$encrypt, decrypt as tf$decrypt } from "@redpointgames/server-function-transforms";
       import { registerServerReference } from "react-server-dom-webpack/server.edge";
       import { jsx } from "react/jsx-runtime";
       if (typeof process.env["ENCRYPTION_KEY"] !== "string") {
@@ -90,7 +90,7 @@ describe("encrypted captured variables", () => {
     });
 
     expect(result.code).toMatchInlineSnapshot(`
-      "import { encrypt as tf$encrypt, decrypt as tf$decrypt } from "@twofold/server-function-transforms";
+      "import { encrypt as tf$encrypt, decrypt as tf$decrypt } from "@redpointgames/server-function-transforms";
       import { registerServerReference } from "react-server-dom-webpack/server.edge";
       import { jsx } from "react/jsx-runtime";
       if (typeof process.env["ENCRYPTION_KEY"] !== "string") {
@@ -141,7 +141,7 @@ describe("encrypted captured variables", () => {
     });
 
     expect(result.code).toMatchInlineSnapshot(`
-      "import { encrypt as tf$encrypt, decrypt as tf$decrypt } from "@twofold/server-function-transforms";
+      "import { encrypt as tf$encrypt, decrypt as tf$decrypt } from "@redpointgames/server-function-transforms";
       import { registerServerReference } from "react-server-dom-webpack/server.edge";
       import { jsx } from "react/jsx-runtime";
       if (typeof process.env["ENCRYPTION_KEY"] !== "string") {
@@ -195,7 +195,7 @@ describe("encrypted captured variables", () => {
     });
 
     expect(result.code).toMatchInlineSnapshot(`
-      "import { encrypt as tf$encrypt, decrypt as tf$decrypt } from "@twofold/server-function-transforms";
+      "import { encrypt as tf$encrypt, decrypt as tf$decrypt } from "@redpointgames/server-function-transforms";
       import { registerServerReference } from "react-server-dom-webpack/server.edge";
       import { jsx } from "react/jsx-runtime";
       if (typeof process.env["ENCRYPTION_KEY"] !== "string") {
@@ -310,7 +310,7 @@ describe("encrypted captured variables", () => {
     });
 
     expect(result.code).toMatchInlineSnapshot(`
-      "import { encrypt as tf$encrypt, decrypt as tf$decrypt } from "@twofold/server-function-transforms";
+      "import { encrypt as tf$encrypt, decrypt as tf$decrypt } from "@redpointgames/server-function-transforms";
       import { registerServerReference } from "react-server-dom-webpack/server.edge";
       import { jsx } from "react/jsx-runtime";
       if (typeof process.env["ENCRYPTION_KEY"] !== "string") {
@@ -394,7 +394,7 @@ describe("encrypted captured variables", () => {
     });
 
     expect(result.code).toMatchInlineSnapshot(`
-      "import { encrypt as tf$encrypt, decrypt as tf$decrypt } from "@twofold/server-function-transforms";
+      "import { encrypt as tf$encrypt, decrypt as tf$decrypt } from "@redpointgames/server-function-transforms";
       import { registerServerReference } from "react-server-dom-webpack/server.edge";
       import { jsx } from "react/jsx-runtime";
       if (typeof process.env["ENCRYPTION_KEY"] !== "string") {
@@ -454,7 +454,7 @@ describe("keys", () => {
     );
 
     expect(result.code).toMatchInlineSnapshot(`
-      "import { encrypt as tf$encrypt, decrypt as tf$decrypt } from "@twofold/server-function-transforms";
+      "import { encrypt as tf$encrypt, decrypt as tf$decrypt } from "@redpointgames/server-function-transforms";
       import { registerServerReference } from "react-server-dom-webpack/server.edge";
       import { jsx } from "react/jsx-runtime";
       if (typeof process.env["ENV_KEY"] !== "string") {
@@ -511,7 +511,7 @@ describe("keys", () => {
     );
 
     expect(result.code).toMatchInlineSnapshot(`
-      "import { encrypt as tf$encrypt, decrypt as tf$decrypt } from "@twofold/server-function-transforms";
+      "import { encrypt as tf$encrypt, decrypt as tf$decrypt } from "@redpointgames/server-function-transforms";
       import { registerServerReference } from "react-server-dom-webpack/server.edge";
       import { jsx } from "react/jsx-runtime";
       if (typeof "a-plain-text-string-password" !== "string") {
@@ -571,7 +571,7 @@ describe("factory functions", () => {
 
     expect(result.serverFunctions).toHaveLength(1);
     expect(result.code).toMatchInlineSnapshot(`
-      "import { encrypt as tf$encrypt, decrypt as tf$decrypt } from "@twofold/server-function-transforms";
+      "import { encrypt as tf$encrypt, decrypt as tf$decrypt } from "@redpointgames/server-function-transforms";
       import { registerServerReference } from "react-server-dom-webpack/server.edge";
       import { jsx } from "react/jsx-runtime";
       if (typeof process.env["ENCRYPTION_KEY"] !== "string") {

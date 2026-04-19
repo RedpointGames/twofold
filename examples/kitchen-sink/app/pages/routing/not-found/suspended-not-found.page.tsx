@@ -1,4 +1,4 @@
-import { notFound } from "@twofold/framework/not-found";
+import { notFound } from "@redpointgames/framework/not-found";
 import { Suspense } from "react";
 
 export default function Page() {

@@ -1,6 +1,6 @@
 "use server";
 
-import { redirect } from "@twofold/framework/redirect";
+import { redirect } from "@redpointgames/framework/redirect";
 
 export async function serverFunction(shouldRedirect: boolean) {
   await new Promise((resolve) => setTimeout(resolve, 1000));

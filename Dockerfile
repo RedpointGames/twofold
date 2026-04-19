@@ -11,8 +11,8 @@ RUN npm install -g corepack@latest && \
 FROM base AS build
 COPY . /usr/src/twofold
 WORKDIR /usr/src/twofold
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --filter="@twofold/framework..." --prod=false --frozen-lockfile
-RUN pnpm run --filter="@twofold/framework..." compile
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --filter="@redpointgames/framework..." --prod=false --frozen-lockfile
+RUN pnpm run --filter="@redpointgames/framework..." compile
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --filter="website..." --prod=false --frozen-lockfile
 RUN pnpm run --filter=website build
 

@@ -1,4 +1,4 @@
-import { APIProps } from "@twofold/framework/types";
+import { APIProps } from "@redpointgames/framework/types";
 import { getPosts } from "./data-layer/posts";
 
 export async function GET({ request }: APIProps) {

@@ -1,12 +1,12 @@
-import cookies from "@twofold/framework/cookies";
+import cookies from "@redpointgames/framework/cookies";
 import {
   allow,
   AuthPolicyProps,
   AuthPolicyResult,
   deny,
   response,
-} from "@twofold/framework/auth";
-import { redirect } from "@twofold/framework/redirect";
+} from "@redpointgames/framework/auth";
+import { redirect } from "@redpointgames/framework/redirect";
 
 /**
  * This is an example of an authentication policy that layouts, pages, actions and routes can optionally use by exporting a 'const auth: AuthPolicyArray = [allowIfCookieSet]'. Non-default auth policies don't have to be specified in this file, but it's a convention so you know where all your authentication code is.
@@ -15,7 +15,7 @@ import { redirect } from "@twofold/framework/redirect";
  *
  * If you want a specific route to discard all of it's authentication policies, you can use the special 'reset' value, like so:
  *
- * import { reset } from "@twofold/framework/auth";
+ * import { reset } from "@redpointgames/framework/auth";
  * export const auth: AuthPolicyArray = [reset, otherPolicy];
  *
  * @param props The authentication properties.

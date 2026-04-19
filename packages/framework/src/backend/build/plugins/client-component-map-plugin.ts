@@ -2,7 +2,7 @@ import { Plugin } from "esbuild";
 import { readFile } from "fs/promises";
 import { join } from "path";
 import { getModuleId } from "../helpers/module.js";
-import { transform as clientComponentTransform } from "@twofold/client-component-transforms";
+import { transform as clientComponentTransform } from "@redpointgames/client-component-transforms";
 import { pathToLanguage } from "../helpers/languages.js";
 import { shouldIgnoreUseClient } from "../helpers/excluded.js";
 

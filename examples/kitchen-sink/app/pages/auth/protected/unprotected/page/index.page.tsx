@@ -1,4 +1,4 @@
-import { AuthPolicyArray, reset } from "@twofold/framework/auth";
+import { AuthPolicyArray, reset } from "@redpointgames/framework/auth";
 
 export const auth: AuthPolicyArray = [reset];
 

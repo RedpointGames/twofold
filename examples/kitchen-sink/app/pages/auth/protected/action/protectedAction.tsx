@@ -1,7 +1,7 @@
 "use server";
 
 import { behaveBasedOnFormData } from "@/app/auth";
-import { AuthPolicyArray } from "@twofold/framework/auth";
+import { AuthPolicyArray } from "@redpointgames/framework/auth";
 
 export const auth: AuthPolicyArray = [behaveBasedOnFormData];
 

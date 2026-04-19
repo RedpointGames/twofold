@@ -1,4 +1,4 @@
-import { PageProps } from "@twofold/framework/types";
+import { PageProps } from "@redpointgames/framework/types";
 import { Reveal } from "./reveal";
 
 export default function SlugPropsPage(props: PageProps) {

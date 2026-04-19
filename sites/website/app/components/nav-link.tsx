@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "@twofold/framework/link";
-import { useOptimisticRoute } from "@twofold/framework/use-optimistic-route";
+import Link from "@redpointgames/framework/link";
+import { useOptimisticRoute } from "@redpointgames/framework/use-optimistic-route";
 import { ComponentProps } from "react";
 
 type Props = ComponentProps<typeof Link<"a">> & {

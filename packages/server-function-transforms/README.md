@@ -54,13 +54,13 @@ If you are using an existing RSC framework then you do not need this package.
 Installation:
 
 ```text
-npm install @twofold/server-function-transforms
+npm install @redpointgames/server-function-transforms
 ```
 
 Usage:
 
 ```typescript
-import { transform, envKey } from "@twofold/server-function-transforms";
+import { transform, envKey } from "@redpointgames/server-function-transforms";
 
 const code = `
   export default function Page({ name }) {
@@ -102,7 +102,7 @@ console.log("server functions", result.serverFunctions);
 Code is transformed using the `transform` function.
 
 ```typescript
-import { transform } from "@twofold/server-function-transforms";
+import { transform } from "@redpointgames/server-function-transforms";
 
 const { code, serverFunctions } = await transform({
   input: {
@@ -147,7 +147,7 @@ The `key` property tells the server function where to find the encryption key.
 Using `envKey` will instruct the server function to load the encryption key from an environment variable.
 
 ```typescript
-import { envKey } from "@twofold/server-function-transforms";
+import { envKey } from "@redpointgames/server-function-transforms";
 
 const { code, serverFunctions } = await transform({
   // ...
@@ -168,7 +168,7 @@ This package ships with built-in encryption and serialization functions. If you 
 The module should export two async functions: `encrypt` and `decrypt`.
 
 ```typescript
-import { envKey } from "@twofold/server-function-transforms";
+import { envKey } from "@redpointgames/server-function-transforms";
 
 const { code, serverFunctions } = await transform({
   // ...
@@ -222,7 +222,7 @@ console.log("server functions", result.serverFunctions);
 To transform server modules into code that is importable by client bundles, pass the `client` option to the transform function.
 
 ```typescript
-import { transform } from "@twofold/server-function-transforms";
+import { transform } from "@redpointgames/server-function-transforms";
 
 const { code, serverFunctions } = await transform({
   input: {

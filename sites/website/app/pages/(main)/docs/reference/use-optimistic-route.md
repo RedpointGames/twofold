@@ -9,8 +9,8 @@ To use the `useOptimisticRoute` hook:
 ```tsx
 "use client";
 
-import { useRouter } from "@twofold/framework/use-router";
-import { useOptimisticRoute } from "@twofold/framework/use-optimistic-route";
+import { useRouter } from "@redpointgames/framework/use-router";
+import { useOptimisticRoute } from "@redpointgames/framework/use-optimistic-route";
 
 export default function ClientComponent() {
   let router = useRouter();
@@ -39,9 +39,9 @@ While the router is transitioning to a new page, the `isTransitioning` property 
 ```tsx
 "use client";
 
-import { Link } from "@twofold/framework/link";
-import { useRouter } from "@twofold/framework/use-router";
-import { useOptimisticRoute } from "@twofold/framework/use-optimistic-route";
+import { Link } from "@redpointgames/framework/link";
+import { useRouter } from "@redpointgames/framework/use-router";
+import { useOptimisticRoute } from "@redpointgames/framework/use-optimistic-route";
 
 export default function ClientComponent() {
   let router = useRouter();
@@ -75,8 +75,8 @@ When the router is not transitioning, the `path` and `searchParams` properties w
 ```tsx
 "use client";
 
-import { useRouter } from "@twofold/framework/use-router";
-import { useOptimisticRoute } from "@twofold/framework/use-optimistic-route";
+import { useRouter } from "@redpointgames/framework/use-router";
+import { useOptimisticRoute } from "@redpointgames/framework/use-optimistic-route";
 
 export default function ClientComponent() {
   let router = useRouter();
@@ -101,7 +101,7 @@ The values returned by `useOptimisticRoute`:
 ```tsx
 "use client";
 
-import { useRouter } from "@twofold/framework/use-router";
+import { useRouter } from "@redpointgames/framework/use-router";
 
 function ClientComponent() {
   let { isTransitioning, path, searchParams } = useOptimisticRoute();

@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "@twofold/framework/link";
+import Link from "@redpointgames/framework/link";
 import { useAnimate } from "motion/react";
-import { useRouter } from "@twofold/framework/use-router";
+import { useRouter } from "@redpointgames/framework/use-router";
 import {
   AnchorHTMLAttributes,
   HTMLAttributes,

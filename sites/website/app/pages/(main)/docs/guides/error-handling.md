@@ -82,7 +82,7 @@ This component receives `ErrorProps` containing the thrown `error` as well as a 
 
 "use client";
 
-import { ErrorProps } from "@twofold/framework/types";
+import { ErrorProps } from "@redpointgames/framework/types";
 
 export default function ErrorComponent({ error, reset }: ErrorProps) {
   let { refresh } = useRouter();

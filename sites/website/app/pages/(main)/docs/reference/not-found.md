@@ -9,8 +9,8 @@ Render the not found page from a page or layout:
 ```tsx
 // app/pages/posts/$slug.page.tsx
 
-import { notFound } from "@twofold/framework/not-found";
-import { PageProps } from "@twofold/framework/types";
+import { notFound } from "@redpointgames/framework/not-found";
+import { PageProps } from "@redpointgames/framework/types";
 import { db } from "./database";
 
 export default function PostPage({ slug }: PageProps<"slug">) {
@@ -35,7 +35,7 @@ Render the not found page from a server action:
 
 // app/pages/posts/mutations.ts
 
-import { notFound } from "@twofold/framework/not-found";
+import { notFound } from "@redpointgames/framework/not-found";
 import { db } from "./database";
 
 async function updatePost(formData: FormData) {
@@ -58,8 +58,8 @@ Render the not found page from middleware:
 ```tsx
 // app/pages/posts/$slug.page.tsx
 
-import { notFound } from "@twofold/framework/not-found";
-import { PageProps } from "@twofold/framework/types";
+import { notFound } from "@redpointgames/framework/not-found";
+import { PageProps } from "@redpointgames/framework/types";
 
 export async function before({ params }: PageProps<"slug">) {
   if (slug === "not-found") {

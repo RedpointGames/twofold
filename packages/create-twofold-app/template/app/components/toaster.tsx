@@ -1,6 +1,6 @@
 "use client";
 
-import { useFlash } from "@twofold/framework/flash";
+import { useFlash } from "@redpointgames/framework/flash";
 import * as z from "zod";
 
 /**

@@ -36,7 +36,7 @@ Similar to pages, layouts can also fetch data. This useful for data that is rend
 
 import { db } from "./database";
 import { ReactNode } from "react";
-import Link from "@twofold/framework/link";
+import Link from "@redpointgames/framework/link";
 
 export default async function PostsLayout({
   children,

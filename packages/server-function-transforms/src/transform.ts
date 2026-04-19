@@ -91,7 +91,7 @@ export async function transform({
   let ast = codeAst?.ast;
   if (!ast) {
     throw new Error(
-      "Failed to transform code. This is probably a bug in @twofold/server-function-transforms.",
+      "Failed to transform code. This is probably a bug in @redpointgames/server-function-transforms.",
     );
   }
 

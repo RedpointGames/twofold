@@ -1,7 +1,7 @@
 import "./global.css";
 import Nav from "./nav";
-import TwofoldFramework from "@twofold/framework/twofold-framework";
-import { LayoutProps } from "@twofold/framework/types";
+import TwofoldFramework from "@redpointgames/framework/twofold-framework";
+import { LayoutProps } from "@redpointgames/framework/types";
 import { Toaster } from "./toaster";
 
 export default function Layout({ children }: LayoutProps) {

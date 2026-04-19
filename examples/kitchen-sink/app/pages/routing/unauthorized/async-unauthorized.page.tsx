@@ -1,4 +1,4 @@
-import { unauthorized } from "@twofold/framework/unauthorized";
+import { unauthorized } from "@redpointgames/framework/unauthorized";
 
 export default async function Page() {
   await new Promise((resolve) => setTimeout(resolve, 1000));

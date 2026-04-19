@@ -1,5 +1,5 @@
 import Markdoc, { Config, Schema, Tag } from "@markdoc/markdoc";
-import { notFound } from "@twofold/framework/not-found";
+import { notFound } from "@redpointgames/framework/not-found";
 import { readdir, readFile } from "fs/promises";
 import path from "path";
 import { cache, ComponentType } from "react";

@@ -1,4 +1,4 @@
-import cookies from "@twofold/framework/cookies";
+import cookies from "@redpointgames/framework/cookies";
 import Control from "./Control";
 
 export default function Page() {

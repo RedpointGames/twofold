@@ -1,5 +1,5 @@
 {
-  "name": "@twofold/server-function-transforms",
+  "name": "@redpointgames/server-function-transforms",
   "version": "0.0.15",
   "description": "Transform and encrypt React Server Functions",
   "type": "module",

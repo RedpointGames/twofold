@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import Link from "@twofold/framework/link";
+import Link from "@redpointgames/framework/link";
 import { LinkWithNavigation } from "./link-with-transition";
 
 export default function Layout({ children }: { children: ReactNode }) {

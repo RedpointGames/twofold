@@ -5,7 +5,7 @@ import { Builder } from "./builder.js";
 import { build, OutputAsset, OutputChunk, Plugin } from "rolldown";
 import path, { dirname, relative, sep } from "path";
 import { readFile } from "fs/promises";
-import { transform as serverFunctionTransform } from "@twofold/server-function-transforms";
+import { transform as serverFunctionTransform } from "@redpointgames/server-function-transforms";
 import { pathToLanguage } from "../helpers/languages.js";
 import { getModuleId } from "../helpers/module.js";
 import * as mime from "mime-types";

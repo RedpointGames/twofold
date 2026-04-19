@@ -1,4 +1,4 @@
-import { redirect } from "@twofold/framework/redirect";
+import { redirect } from "@redpointgames/framework/redirect";
 
 export function before() {
   redirect("/routing/redirects/ending");

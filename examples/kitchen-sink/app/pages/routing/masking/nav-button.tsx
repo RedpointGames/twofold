@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "@twofold/framework/use-router";
+import { useRouter } from "@redpointgames/framework/use-router";
 
 export function NavButton({ number }: { number: number }) {
   let router = useRouter();

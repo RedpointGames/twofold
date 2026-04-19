@@ -25,6 +25,19 @@ jobs:
         with:
           node-version: "24"
           registry-url: "https://registry.npmjs.org"
+      - name: Set package versions
+        run: |
+          # discover package files
+          export PACKAGE_JSON_FILES=$(find . -name package.json -not -path "*/node_modules/*")
+
+          # generate version
+          export PACKAGE_VERSION_SUFFIX="dev.$(date +%Y.%m.%d.%H.%M.%S)+$(git rev-parse --short HEAD)"
+          
+          # set repository
+          for PACKAGE_JSON in $PACKAGE_JSON_FILES; do jq ".repository |= \"https://github.com/$GITHUB_REPOSITORY\"" $PACKAGE_JSON > $PACKAGE_JSON.tmp; mv $PACKAGE_JSON.tmp $PACKAGE_JSON; done
+
+          # update versions
+          for PACKAGE_JSON in $PACKAGE_JSON_FILES; do jq ".version |= (match(\"^([0-9.]+)\").captures[0].string + \"-$PACKAGE_VERSION_SUFFIX\")" $PACKAGE_JSON > $PACKAGE_JSON.tmp; mv $PACKAGE_JSON.tmp $PACKAGE_JSON; done
       - name: Install Dependencies
         run: |
           corepack enable
@@ -40,40 +53,10 @@ jobs:
       - name: Push to NPM
         if: github.event_name != 'pull_request'
         run: |
-          export PACKAGE_NAMESPACE=$(echo $GITHUB_REPOSITORY_OWNER | tr '[:upper:]' '[:lower:]')
-
-          PACKAGE_JSON_FILES=$(find . -name package.json -not -path "*/node_modules/*")
-
-          # set repository
-          for PACKAGE_JSON in $PACKAGE_JSON_FILES; do jq ".repository |= \"https://github.com/$GITHUB_REPOSITORY\"" $PACKAGE_JSON > $PACKAGE_JSON.tmp; mv $PACKAGE_JSON.tmp $PACKAGE_JSON; done
-
-          # rename package versions
-          export PACKAGE_VERSION_SUFFIX="dev.$(date +%Y.%m.%d.%H.%M.%S)+$(git rev-parse --short HEAD)"
-          for PACKAGE_JSON in $PACKAGE_JSON_FILES; do jq ".version |= (match(\"^([0-9.]+)\").captures[0].string + \"-$PACKAGE_VERSION_SUFFIX\")" $PACKAGE_JSON > $PACKAGE_JSON.tmp; mv $PACKAGE_JSON.tmp $PACKAGE_JSON; done
-
-          # rename package names
-          for PACKAGE_JSON in $PACKAGE_JSON_FILES; do jq ".name |= sub(\"@twofold\"; \"@$PACKAGE_NAMESPACE\")" $PACKAGE_JSON > $PACKAGE_JSON.tmp; mv $PACKAGE_JSON.tmp $PACKAGE_JSON; done
-          for PACKAGE_JSON in $PACKAGE_JSON_FILES; do jq ".name |= sub(\"create-twofold-app\"; \"@$PACKAGE_NAMESPACE/create-twofold-app\")" $PACKAGE_JSON > $PACKAGE_JSON.tmp; mv $PACKAGE_JSON.tmp $PACKAGE_JSON; done
-          for PACKAGE_JSON in $PACKAGE_JSON_FILES; do jq ".name |= sub(\"eslint-plugin-twofold\"; \"@$PACKAGE_NAMESPACE/eslint-plugin-twofold\")" $PACKAGE_JSON > $PACKAGE_JSON.tmp; mv $PACKAGE_JSON.tmp $PACKAGE_JSON; done
-
-          # rename package references
-          for PACKAGE_JSON in $PACKAGE_JSON_FILES; do 
-            if [[ "$PACKAGE_JSON" == "./package.json" ]]; then
-              continue
-            fi
-            jq ".dependencies |= (to_entries | map({key: (.key | sub(\"@twofold/\"; \"@$PACKAGE_NAMESPACE/\")), value: .value}) | from_entries)" $PACKAGE_JSON > $PACKAGE_JSON.tmp; 
-            mv $PACKAGE_JSON.tmp $PACKAGE_JSON; 
-            cat $PACKAGE_JSON; 
-          done
-
-          # compile and package again
-          #   PACKAGE_NAMESPACE is read by compile.js and rewrites imports
-          #   in built code once compiled
-          git clean -xdf
-          pnpm install --no-frozen-lockfile
+          # compile
           pnpm compile
 
-          # publish packages
+          # publish
           for PACKAGE in packages/*; do
             pushd $PACKAGE
             cat >.npmrc <<EOF

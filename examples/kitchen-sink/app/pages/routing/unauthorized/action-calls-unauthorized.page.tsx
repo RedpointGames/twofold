@@ -1,4 +1,4 @@
-import { unauthorized } from "@twofold/framework/unauthorized";
+import { unauthorized } from "@redpointgames/framework/unauthorized";
 
 async function action() {
   "use server";

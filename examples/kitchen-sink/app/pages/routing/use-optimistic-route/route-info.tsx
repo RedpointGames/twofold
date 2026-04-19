@@ -1,7 +1,7 @@
 "use client";
 
-import { useOptimisticRoute } from "@twofold/framework/use-optimistic-route";
-import { useRouter } from "@twofold/framework/use-router";
+import { useOptimisticRoute } from "@redpointgames/framework/use-optimistic-route";
+import { useRouter } from "@redpointgames/framework/use-router";
 
 export function RouteInfo() {
   let router = useRouter();

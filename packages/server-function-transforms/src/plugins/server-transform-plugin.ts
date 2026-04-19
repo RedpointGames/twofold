@@ -45,7 +45,7 @@ export function ServerTransformPlugin(
       this.encryption = {
         hasEncryptedVariables: false,
         module:
-          options.encryption.module ?? "@twofold/server-function-transforms",
+          options.encryption.module ?? "@redpointgames/server-function-transforms",
         key: options.encryption.key,
       };
       this.getUniqueFunctionName = (name: string) => {
@@ -414,7 +414,7 @@ function insertFunctionIntoProgram({
   let underProgramPath = findParentUnderProgram(path);
   if (!underProgramPath) {
     throw new Error(
-      "Failed to find parent program node. This is a bug in @twofold/server-function-transforms.",
+      "Failed to find parent program node. This is a bug in @redpointgames/server-function-transforms.",
     );
   }
 
@@ -450,7 +450,7 @@ function registerServerFunction({
 
   if (!functionName) {
     throw new Error(
-      "Failed to find function name. This is a bug in @twofold/server-function-transforms.",
+      "Failed to find function name. This is a bug in @redpointgames/server-function-transforms.",
     );
   }
 

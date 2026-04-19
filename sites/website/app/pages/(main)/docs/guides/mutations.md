@@ -147,7 +147,7 @@ Here's an example of how to update a post in the database:
 // app/pages/posts/$slug.page.tsx
 
 import { db } from "./database";
-import { PageProps } from "@twofold/framework/types";
+import { PageProps } from "@redpointgames/framework/types";
 
 export default function PostsSlugPage({
   params,

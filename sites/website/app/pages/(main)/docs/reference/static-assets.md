@@ -45,7 +45,7 @@ Imported images use relative URLs. Use the page's `url` if you need an absolute 
 // app/pages/index.page.tsx
 
 import picture from "./picture.png";
-import { PageProps } from "@twofold/framework/types";
+import { PageProps } from "@redpointgames/framework/types";
 
 export default function IndexPage({ url }: PageProps) {
   const absolutePictureUrl = new URL(picture, url.origin);

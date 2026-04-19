@@ -1,8 +1,8 @@
 import Markdoc, { Config, RenderableTreeNodes, Tag } from "@markdoc/markdoc";
 import slugify from "@sindresorhus/slugify";
-import Link from "@twofold/framework/link";
-import { notFound } from "@twofold/framework/not-found";
-import { PageProps } from "@twofold/framework/types";
+import Link from "@redpointgames/framework/link";
+import { notFound } from "@redpointgames/framework/not-found";
+import { PageProps } from "@redpointgames/framework/types";
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import React, { cache } from "react";

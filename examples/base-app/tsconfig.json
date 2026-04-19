@@ -11,7 +11,7 @@
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "target": "ESNext",
-    "types": ["react", "react-dom", "node", "@twofold/framework"],
+    "types": ["react", "react-dom", "node", "@redpointgames/framework"],
     "paths": {
       "@/*": ["./*"]
     }

@@ -1,4 +1,4 @@
-import { notFound } from "@twofold/framework/not-found";
+import { notFound } from "@redpointgames/framework/not-found";
 
 export default async function Page() {
   await new Promise((resolve) => setTimeout(resolve, 5000));

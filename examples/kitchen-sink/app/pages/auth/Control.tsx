@@ -4,7 +4,7 @@ import React, { ReactNode, useState, useTransition } from "react";
 import { clearCookie, setCookie } from "./cookie";
 import protectedAction from "./protected/action/protectedAction";
 import unprotectedAction from "./protected/unprotected/action/unprotectedAction";
-import { isServerActionUnauthorizedError } from "@twofold/framework/auth";
+import { isServerActionUnauthorizedError } from "@redpointgames/framework/auth";
 
 function TestLink(props: { href: string }) {
   return (

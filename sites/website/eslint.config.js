@@ -1,5 +1,5 @@
 import { defineConfig } from "eslint/config";
-import eslintPluginTwofold from "eslint-plugin-twofold";
+import eslintPluginTwofold from "@redpointgames/eslint-plugin-twofold";
 
 export default defineConfig([
   eslintPluginTwofold.configs.recommended,

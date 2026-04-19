@@ -1,7 +1,7 @@
 "use client";
 
-import { ErrorProps } from "@twofold/framework/types";
-import { useRouter } from "@twofold/framework/use-router";
+import { ErrorProps } from "@redpointgames/framework/types";
+import { useRouter } from "@redpointgames/framework/use-router";
 import { startTransition } from "react";
 
 export default function ErrorUI({ error, reset }: ErrorProps) {

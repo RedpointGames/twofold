@@ -39,7 +39,7 @@ export function transformerClientBoundary(
   let padding = mergedOptions.verticalPadding;
 
   return {
-    name: "@twofold/shiki-transformer-client-boundary",
+    name: "@redpointgames/shiki-transformer-client-boundary",
     preprocess(code) {
       let lines = code.split("\n");
       let out: string[] = [];

@@ -1,4 +1,4 @@
-import cookies from "@twofold/framework/cookies";
+import cookies from "@redpointgames/framework/cookies";
 import { Fragment } from "react";
 
 async function setToString() {

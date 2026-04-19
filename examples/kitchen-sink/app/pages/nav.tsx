@@ -1,8 +1,8 @@
 "use client";
 
 import * as NavigationMenu from "@radix-ui/react-navigation-menu";
-import { useRouter } from "@twofold/framework/use-router";
-import Link from "@twofold/framework/link";
+import { useRouter } from "@redpointgames/framework/use-router";
+import Link from "@redpointgames/framework/link";
 import { ReactNode, useState } from "react";
 
 export default function Nav() {

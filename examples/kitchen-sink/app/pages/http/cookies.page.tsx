@@ -1,4 +1,4 @@
-import cookies from "@twofold/framework/cookies";
+import cookies from "@redpointgames/framework/cookies";
 
 async function setCookie(formData: FormData) {
   "use server";

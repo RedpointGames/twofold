@@ -37,7 +37,7 @@ Pages can contain dynamic params in their URLs. These params are denoted by a `$
 ```tsx
 // app/pages/posts/$slug.page.tsx
 
-import { PageProps } from "@twofold/framework/types";
+import { PageProps } from "@redpointgames/framework/types";
 
 export default function PostsSlugPage({ params }: PageProps<"slug">) {
   return <div>You are viewing: {params.slug}</div>;
@@ -61,14 +61,14 @@ It is important to note that these params are immutable and should not be modifi
 
 ## Types
 
-A special `PageProps` type can be imported from `@twofold/framework/types` that provides types for the props passed to pages.
+A special `PageProps` type can be imported from `@redpointgames/framework/types` that provides types for the props passed to pages.
 
 This type can take a type argument that represents the dynamic params in the URL.
 
 ```tsx
 // app/pages/posts/$slug.page.tsx
 
-import { PageProps } from "@twofold/framework/types";
+import { PageProps } from "@redpointgames/framework/types";
 
 export default function PostsSlugPage(props: PageProps<"slug">) {
   // ...
@@ -80,7 +80,7 @@ And for pages without dynamic params, the `PageProps` type can be used without a
 ```tsx
 // app/pages/posts/index.page.tsx
 
-import { PageProps } from "@twofold/framework/types";
+import { PageProps } from "@redpointgames/framework/types";
 
 export default function PostsSlugPage(props: PageProps) {
   // ...

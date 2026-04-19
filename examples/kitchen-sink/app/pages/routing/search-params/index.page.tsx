@@ -1,5 +1,5 @@
-import Link from "@twofold/framework/link";
-import { PageProps } from "@twofold/framework/types";
+import Link from "@redpointgames/framework/link";
+import { PageProps } from "@redpointgames/framework/types";
 import { ClientSideParams } from "./client-side-params";
 import { VerifySearchParams } from "./verify-search-params";
 

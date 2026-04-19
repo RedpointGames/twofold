@@ -224,8 +224,8 @@ async function main() {
   // remap versions
   let versions: Record<any, any> = {
     ...catalog,
-    "eslint-plugin-twofold": `${version}`,
-    "@twofold/framework": `${version}`,
+    "@redpointgames/eslint-plugin-twofold": `${version}`,
+    "@redpointgames/framework": `${version}`,
   };
 
   function modifyVersions(deps: Record<string, string>) {

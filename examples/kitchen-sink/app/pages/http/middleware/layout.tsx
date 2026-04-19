@@ -1,4 +1,4 @@
-import Link from "@twofold/framework/link";
+import Link from "@redpointgames/framework/link";
 import { ReactNode } from "react";
 
 export default function Layout({ children }: { children: ReactNode }) {

@@ -10,8 +10,8 @@ The root layout in your application is the layout that wraps every page componen
 
 ```tsx
 import "./global.css";
-import TwofoldFramework from "@twofold/framework/twofold-framework";
-import { LayoutProps } from "@twofold/framework/types";
+import TwofoldFramework from "@redpointgames/framework/twofold-framework";
+import { LayoutProps } from "@redpointgames/framework/types";
 
 export default function Layout({ children }: LayoutProps) {
   return (
@@ -37,7 +37,7 @@ Layouts that are nested will create a hierarchy of layouts. When a page componen
 ```tsx
 // app/pages/posts/layout.tsx
 
-import { LayoutProps } from "@twofold/framework/types";
+import { LayoutProps } from "@redpointgames/framework/types";
 
 export default function PostsLayout({ children }: LayoutProps) {
   return (
@@ -74,12 +74,12 @@ In addition to the `children` prop, layouts receive the same props passed to pag
 
 ## Types
 
-A special `LayoutProps` type can be imported from `@twofold/framework/types` that provides types for the props passed to pages.
+A special `LayoutProps` type can be imported from `@redpointgames/framework/types` that provides types for the props passed to pages.
 
 ```tsx
 // app/pages/posts/layout.tsx
 
-import { LayoutProps } from "@twofold/framework/types";
+import { LayoutProps } from "@redpointgames/framework/types";
 
 export default function PostsLayout(props: LayoutProps) {
   // ...

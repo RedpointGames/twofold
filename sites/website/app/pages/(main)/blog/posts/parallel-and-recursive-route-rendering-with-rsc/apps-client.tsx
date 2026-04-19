@@ -13,9 +13,9 @@ import {
 import { useFormStatus } from "react-dom";
 import { Browser } from "../../components/browser";
 import { AnimatePresence, motion } from "motion/react";
-import { useFlash } from "@twofold/framework/flash";
+import { useFlash } from "@redpointgames/framework/flash";
 import * as z from "zod";
-import { useRouter } from "@twofold/framework/use-router";
+import { useRouter } from "@redpointgames/framework/use-router";
 import { Arrow } from "../../components/arrows";
 
 export function DemoBrowser({ children }: { children: ReactNode }) {

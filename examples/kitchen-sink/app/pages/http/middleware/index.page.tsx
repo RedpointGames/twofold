@@ -1,4 +1,4 @@
-import cookies from "@twofold/framework/cookies";
+import cookies from "@redpointgames/framework/cookies";
 
 export async function before() {
   console.log("running before middleware");

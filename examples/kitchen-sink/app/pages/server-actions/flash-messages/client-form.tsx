@@ -1,6 +1,6 @@
 "use client";
 
-import { flash } from "@twofold/framework/flash";
+import { flash } from "@redpointgames/framework/flash";
 
 function action() {
   flash("This is a client side flash message");

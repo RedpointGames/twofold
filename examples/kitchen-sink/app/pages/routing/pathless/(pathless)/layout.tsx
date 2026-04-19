@@ -1,5 +1,5 @@
-import Link from "@twofold/framework/link";
-import { LayoutProps } from "@twofold/framework/types";
+import Link from "@redpointgames/framework/link";
+import { LayoutProps } from "@redpointgames/framework/types";
 
 export default function PathlessLayout({ children }: LayoutProps) {
   return (
