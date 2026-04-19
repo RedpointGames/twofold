@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: ["main"]
 
+permissions:
+  id-token: write
+  packages: write
+
 jobs:
   build-and-publish:
     name: "Build and Publish"
@@ -16,6 +20,11 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
       - name: Install Dependencies
         run: |
           corepack enable
@@ -28,12 +37,10 @@ jobs:
             pnpm lint
             popd
           done
-      - name: Push to GitHub
+      - name: Push to NPM
         if: github.event_name != 'pull_request'
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          export PACKAGE_NAMESPACE=$GITHUB_REPOSITORY_OWNER
+          export PACKAGE_NAMESPACE=$(echo $GITHUB_REPOSITORY_OWNER | tr '[:upper:]' '[:lower:]')
 
           PACKAGE_JSON_FILES=$(find . -name package.json -not -path "*/node_modules/*")
 
@@ -50,7 +57,7 @@ jobs:
           for PACKAGE_JSON in $PACKAGE_JSON_FILES; do jq ".name |= sub(\"eslint-plugin-twofold\"; \"@$PACKAGE_NAMESPACE/eslint-plugin-twofold\")" $PACKAGE_JSON > $PACKAGE_JSON.tmp; mv $PACKAGE_JSON.tmp $PACKAGE_JSON; done
 
           # rename package references
-          for PACKAGE_JSON in $PACKAGE_JSON_FILES; do jq ".dependencies = (.dependencies // {}) | (to_entries | map({key: (.key | sub(\"@twofold/\"; \"@$PACKAGE_NAMESPACE/\")), value: .value}) | from_entries)" $PACKAGE_JSON > $PACKAGE_JSON.tmp; mv $PACKAGE_JSON.tmp $PACKAGE_JSON; done
+          for PACKAGE_JSON in $PACKAGE_JSON_FILES; do jq ".dependencies = (.dependencies // {}) | (to_entries | map({key: (.key | sub(\"@twofold/\"; \"@$PACKAGE_NAMESPACE/\")), value: .value}) | from_entries)" $PACKAGE_JSON > $PACKAGE_JSON.tmp; mv $PACKAGE_JSON.tmp $PACKAGE_JSON; cat $PACKAGE_JSON; done
 
           # compile and package again
           #   PACKAGE_NAMESPACE is read by compile.js and rewrites imports
@@ -61,10 +68,9 @@ jobs:
           for PACKAGE in packages/*; do
             pushd $PACKAGE
             cat >.npmrc <<EOF
-          //npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
-          @${GITHUB_REPOSITORY_OWNER}:registry=https://npm.pkg.github.com/
+          @${PACKAGE_NAMESPACE}:registry=https://registry.npmjs.org/
           always-auth=true
           EOF
-            pnpm publish --no-git-checks
+            pnpm publish --no-git-checks --tag latest --access public
             popd
           done
