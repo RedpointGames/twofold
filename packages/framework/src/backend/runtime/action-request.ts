@@ -259,6 +259,16 @@ export class ActionRequest {
       }
     }
 
+    let store = getStore();
+    if (store) {
+      // TODO: we'll fork the store for action requests in the future. for now
+      // we'll directly mutate it.
+      store.context = {
+        type: "action",
+        request: this.#request,
+      };
+    }
+
     try {
       let result = await this.#action.runAction();
       return {

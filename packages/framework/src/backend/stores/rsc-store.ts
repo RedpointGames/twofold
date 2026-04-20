@@ -30,11 +30,17 @@ export type Store = {
   flash: {
     add(message: JSONValue): void;
   };
-  context: {
-    type: "page";
-    request: Request;
-    assets: string[];
-  } | null;
+  context:
+    | {
+        type: "page";
+        request: Request;
+        assets: string[];
+      }
+    | {
+        type: "action";
+        request: Request;
+      }
+    | null;
   assets: string[];
   authCache: Map<string, unknown>;
 };
