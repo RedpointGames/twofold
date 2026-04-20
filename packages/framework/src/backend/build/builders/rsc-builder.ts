@@ -691,8 +691,7 @@ export class RSCBuilder extends Builder {
       });
 
       this.#metafile = result?.metafile;
-
-      // this.tree.tree.print();
+      this.#cachedApplicationTree = undefined;
     } catch (error) {
       console.error(error);
       this.reportError(error);
