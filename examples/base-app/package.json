@@ -23,7 +23,7 @@
     "react-dom": "catalog:",
     "react-server-dom-webpack": "catalog:",
     "server-only": "^0.0.1",
-    "tailwindcss": "^4.1.14",
+    "tailwindcss": "^4.2.4",
     "zod": "4.3.6"
   },
   "devDependencies": {
