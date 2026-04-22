@@ -8,6 +8,7 @@ import { InlineRSCStream } from "../components/inline-rsc-stream";
 import { RouteStackEntry, RouteStack } from "../contexts/route-stack-context";
 import { ReactDOMServerReadableStream } from "react-dom/server";
 import type { BrowserOptions } from "@sentry/react";
+import { ProgressBarProvider } from "react-transition-progress";
 
 export function SSRApp({
   url,
@@ -42,22 +43,24 @@ export function SSRApp({
       {sentryTrace ? <meta name="sentry-trace" content={sentryTrace} /> : null}
       {sentryBaggage ? <meta name="baggage" content={sentryBaggage} /> : null}
 
-      <RoutingContext
-        version={1}
-        path={url.pathname}
-        mask={undefined}
-        searchParams={url.searchParams}
-        optimisticPath={url.pathname}
-        optimisticSearchParams={url.searchParams}
-        isTransitioning={false}
-        navigate={navigate}
-        replace={replace}
-        refresh={refresh}
-      >
-        <RouteStack stack={routeStack} />
-      </RoutingContext>
+      <ProgressBarProvider>
+        <RoutingContext
+          version={1}
+          path={url.pathname}
+          mask={undefined}
+          searchParams={url.searchParams}
+          optimisticPath={url.pathname}
+          optimisticSearchParams={url.searchParams}
+          isTransitioning={false}
+          navigate={navigate}
+          replace={replace}
+          refresh={refresh}
+        >
+          <RouteStack stack={routeStack} />
+        </RoutingContext>
 
-      <InlineRSCStream reader={rscStreamReader} />
+        <InlineRSCStream reader={rscStreamReader} />
+      </ProgressBarProvider>
     </>
   );
 }

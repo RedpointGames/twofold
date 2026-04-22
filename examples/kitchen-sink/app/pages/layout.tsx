@@ -3,7 +3,7 @@ import Nav from "./nav";
 import TwofoldFramework from "@redpointgames/framework/twofold-framework";
 import { LayoutProps } from "@redpointgames/framework/types";
 import { Toaster } from "./toaster";
-import { ProgressBar } from "./ProgressBar";
+import { ProgressBar } from "@redpointgames/framework/progress";
 
 export default function Layout({ children }: LayoutProps) {
   return (
@@ -14,7 +14,7 @@ export default function Layout({ children }: LayoutProps) {
         <meta charSet="utf-8" />
       </head>
       <body className="subpixel-antialiased">
-        <ProgressBar />
+        <ProgressBar className="fixed top-0 h-1 bg-sky-500 shadow-lg shadow-sky-500/20" />
         <div>
           <Nav />
         </div>
