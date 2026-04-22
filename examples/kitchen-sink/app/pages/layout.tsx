@@ -3,7 +3,7 @@ import Nav from "./nav";
 import TwofoldFramework from "@redpointgames/framework/twofold-framework";
 import { LayoutProps } from "@redpointgames/framework/types";
 import { Toaster } from "./toaster";
-import { ProgressBar } from "./ProgessBar";
+import { ProgressBar } from "./ProgressBar";
 
 export default function Layout({ children }: LayoutProps) {
   return (
