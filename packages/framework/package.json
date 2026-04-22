@@ -112,7 +112,7 @@
     "picomatch": "^4.0.3",
     "prettier": "^3.6.2",
     "react-refresh": "^0.18.0",
-    "rolldown": "1.0.0-beta.53",
+    "rolldown": "1.0.0-rc.16",
     "serialize-error": "^12.0.0",
     "server-only": "^0.0.1",
     "stacktrace-js": "^2.0.2",
