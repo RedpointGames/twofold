@@ -234,6 +234,12 @@ export class ActionRequest {
   async getResult() {
     if (!this.#result) {
       this.#result = await this.runAction();
+
+      if (process.env.TWOFOLD_TRACE_ACTION_RESULTS === "1") {
+        console.log(
+          `Action result: ${await this.#action.id()} = ${JSON.stringify(this.#result)}`,
+        );
+      }
     }
 
     return this.#result;
