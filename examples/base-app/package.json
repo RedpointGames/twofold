@@ -24,7 +24,7 @@
     "react-server-dom-webpack": "catalog:",
     "server-only": "^0.0.1",
     "tailwindcss": "^4.1.14",
-    "zod": "4.1.11"
+    "zod": "4.3.6"
   },
   "devDependencies": {
     "@types/node": "catalog:",
