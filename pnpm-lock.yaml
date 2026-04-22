@@ -296,7 +296,7 @@ importers:
         version: link:../server-function-transforms
       '@ryanto/esbuild-plugin-tailwind':
         specifier: ^0.0.3
-        version: 0.0.3(esbuild@0.28.0)(tailwindcss@4.2.4)
+        version: 0.0.3(esbuild@0.28.0)(tailwindcss@4.2.2)
       '@sentry/node':
         specifier: ^10.49.0
         version: 10.49.0
@@ -377,7 +377,7 @@ importers:
         version: 2.0.2
       tailwindcss:
         specifier: '>=4.0.0'
-        version: 4.2.4
+        version: 4.2.2
       urlpattern-polyfill:
         specifier: 10.1.0
         version: 10.1.0
@@ -4664,20 +4664,8 @@ packages:
   tailwindcss@4.2.4:
     resolution: {integrity: sha512-HhKppgO81FQof5m6TEnuBWCZGgfRAWbaeOaGT00KOy/Pf/j6oUihdvBpA7ltCeAvZpFhW3j0PTclkxsd4IXYDA==}
 
-  tapable@2.3.3:
-    resolution: {integrity: sha512-uxc/zpqFg6x7C8vOE7lh6Lbda8eEL9zmVm/PLeTPBRhh1xCgdWaQ+J1CUieGpIfm2HdtsUpRv+HshiasBMcc6A==}
-    engines: {node: '>=6'}
-
-  tapable@2.3.3:
-    resolution: {integrity: sha512-uxc/zpqFg6x7C8vOE7lh6Lbda8eEL9zmVm/PLeTPBRhh1xCgdWaQ+J1CUieGpIfm2HdtsUpRv+HshiasBMcc6A==}
-    engines: {node: '>=6'}
-
-  tapable@2.3.3:
-    resolution: {integrity: sha512-uxc/zpqFg6x7C8vOE7lh6Lbda8eEL9zmVm/PLeTPBRhh1xCgdWaQ+J1CUieGpIfm2HdtsUpRv+HshiasBMcc6A==}
-    engines: {node: '>=6'}
-
-  tapable@2.3.3:
-    resolution: {integrity: sha512-uxc/zpqFg6x7C8vOE7lh6Lbda8eEL9zmVm/PLeTPBRhh1xCgdWaQ+J1CUieGpIfm2HdtsUpRv+HshiasBMcc6A==}
+  tapable@2.3.2:
+    resolution: {integrity: sha512-1MOpMXuhGzGL5TTCZFItxCc0AARf1EZFQkGqMm7ERKj8+Hgr5oLvJOVFcC+lRmR8hCe2S3jC4T5D7Vg/d7/fhA==}
     engines: {node: '>=6'}
 
   tar@7.5.13:
@@ -6537,13 +6525,13 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.60.2':
     optional: true
 
-  '@ryanto/esbuild-plugin-tailwind@0.0.3(esbuild@0.28.0)(tailwindcss@4.2.4)':
+  '@ryanto/esbuild-plugin-tailwind@0.0.3(esbuild@0.28.0)(tailwindcss@4.2.2)':
     dependencies:
       '@tailwindcss/node': 4.2.4
       '@tailwindcss/oxide': 4.1.14
       esbuild: 0.28.0
       lightningcss: 1.32.0
-      tailwindcss: 4.2.4
+      tailwindcss: 4.2.2
 
   '@sentry-internal/browser-utils@10.49.0':
     dependencies:
@@ -7588,7 +7576,7 @@ snapshots:
   enhanced-resolve@5.20.1:
     dependencies:
       graceful-fs: 4.2.11
-      tapable: 2.3.3
+      tapable: 2.3.2
 
   enquirer@2.4.1:
     dependencies:
@@ -9311,13 +9299,7 @@ snapshots:
 
   tailwindcss@4.2.4: {}
 
-  tapable@2.3.3: {}
-
-  tapable@2.3.3: {}
-
-  tapable@2.3.3: {}
-
-  tapable@2.3.3: {}
+  tapable@2.3.2: {}
 
   tar@7.5.13:
     dependencies:
@@ -9637,7 +9619,7 @@ snapshots:
       mime-db: 1.54.0
       neo-async: 2.6.2
       schema-utils: 4.3.3
-      tapable: 2.3.3
+      tapable: 2.3.2
       terser-webpack-plugin: 5.4.0(webpack@5.106.2)
       watchpack: 2.5.1
       webpack-sources: 3.3.4
@@ -9668,7 +9650,7 @@ snapshots:
       mime-db: 1.54.0
       neo-async: 2.6.2
       schema-utils: 4.3.3
-      tapable: 2.3.3
+      tapable: 2.3.2
       terser-webpack-plugin: 5.4.0(esbuild@0.28.0)(webpack@5.106.2(esbuild@0.28.0))
       watchpack: 2.5.1
       webpack-sources: 3.3.4
