@@ -197,7 +197,12 @@ export abstract class Build {
 
     // check if Sentry upload should be enabled
     let appConfig = await this.getAppConfig();
-    if (appConfig.sentryUploadSourcemaps === true) {
+    if (
+      appConfig.sentryUploadSourcemaps === true &&
+      (process.env.SENTRY_ORG ?? "").trim().length !== 0 &&
+      (process.env.SENTRY_PROJECT ?? "").trim().length !== 0 &&
+      (process.env.SENTRY_AUTH_TOKEN ?? "").trim().length !== 0
+    ) {
       const cli = new SentryCli(null, {});
       console.log("Injecting debug IDs into source maps ...");
       await cli.sourceMaps.inject({
@@ -206,8 +211,7 @@ export abstract class Build {
       console.log("Uploading source maps ...");
       console.log(`Scanning: ${process.cwd()}`);
       const releaseOptions =
-        process.env.SENTRY_RELEASE !== undefined &&
-        process.env.SENTRY_RELEASE.trim().length !== 0
+        (process.env.SENTRY_RELEASE ?? "").trim().length !== 0
           ? [`--release=${process.env.SENTRY_RELEASE}`]
           : [];
       await cli.sourceMaps.execute(
