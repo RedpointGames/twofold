@@ -27,7 +27,7 @@ import { ErrorTemplate } from "../rsc/error-template.js";
 import { Generic } from "../rsc/generic.js";
 import { CatchBoundary } from "../rsc/catch-boundary.js";
 import { invariant } from "../../utils/invariant.js";
-import { Node } from "../rsc/tree-node.js";
+import { FindPageType, Node } from "../rsc/tree-node.js";
 import { CompiledServerAction } from "../rsc/compiled-server-action.js";
 
 interface ApplicationTreeProps {
@@ -83,10 +83,6 @@ class ApplicationTree {
     );
     this.#notFoundPage = ApplicationTree.#constructNotFoundPage(props.metafile);
     this.#root = this.#constructRoot();
-  }
-
-  findPageForPath(path: string) {
-    return this.#root.tree.findPageForPath(path);
   }
 
   get root() {
@@ -875,7 +871,14 @@ export class RSCBuilder extends Builder {
   }
 
   findPageForPath(path: string) {
-    return this.root.tree.findPageForPath(path);
+    let page = this.root.tree.findPageForPath(FindPageType.Static, path);
+    if (!page) {
+      page = this.root.tree.findPageForPath(FindPageType.Dynamic, path);
+    }
+    if (!page) {
+      page = this.root.tree.findPageForPath(FindPageType.CatchAll, path);
+    }
+    return page;
   }
 
   get serverManifest() {

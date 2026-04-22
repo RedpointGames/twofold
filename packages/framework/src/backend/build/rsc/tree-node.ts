@@ -30,6 +30,12 @@ export type Treeable = {
   parent: Node | undefined;
 };
 
+export enum FindPageType {
+  Static,
+  Dynamic,
+  CatchAll,
+}
+
 export class TreeNode {
   #value: Node;
   #parent: TreeNode | null = null;
@@ -158,7 +164,7 @@ export class TreeNode {
     console.log("*** Done Printing Tree ***");
   }
 
-  findPageForPath(realPath: string): Page | undefined {
+  findPageForPath(findType: FindPageType, realPath: string): Page | undefined {
     let childValues = this.children.map((child) => child.value);
     let [staticAndDynamicPages, catchAllPages] = partition(
       childValues.filter((value) => value instanceof Page),
@@ -170,23 +176,34 @@ export class TreeNode {
       (page) => page.isDynamic,
     );
 
-    let sortBy = (a: Page, b: Page) =>
-      a.dynamicSegments.length - b.dynamicSegments.length;
-    let dynamicPagesInOrder = dynamicPages.toSorted(sortBy);
-
-    let page =
-      staticPages.find((page) => pathMatches(page.path, realPath)) ??
-      dynamicPagesInOrder.find((page) => pathMatches(page.path, realPath)) ??
-      // this should really be DFS
-      childValues
+    let page: Page | undefined = undefined;
+    switch (findType) {
+      case FindPageType.Static:
+        page = staticPages.find((page) => pathMatches(page.path, realPath));
+        break;
+      case FindPageType.Dynamic: {
+        let sortBy = (a: Page, b: Page) =>
+          a.dynamicSegments.length - b.dynamicSegments.length;
+        let dynamicPagesInOrder = dynamicPages.toSorted(sortBy);
+        page = dynamicPagesInOrder.find((page) =>
+          pathMatches(page.path, realPath),
+        );
+        break;
+      }
+      case FindPageType.CatchAll:
+        page = catchAllPages.find((page) => pathMatches(page.path, realPath));
+        break;
+    }
+    if (!page) {
+      page = childValues
         .filter((value) => {
           let holdsPages =
             value instanceof Layout || value instanceof CatchBoundary;
           return holdsPages && pathPartialMatches(value.path, realPath);
         })
-        .map((value) => value.tree.findPageForPath(realPath))
-        .find(Boolean) ??
-      catchAllPages.find((page) => pathMatches(page.path, realPath));
+        .map((value) => value.tree.findPageForPath(findType, realPath))
+        .find(Boolean);
+    }
 
     return page;
   }
