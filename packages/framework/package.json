@@ -25,6 +25,7 @@
     },
     "./types": "./src/types/importable.ts",
     "./twofold-framework": "./src/client/components/twofold-framework.tsx",
+    "./progress": "./src/client/components/progress.tsx",
     "./link": "./src/client/components/link.tsx",
     "./use-router": "./src/client/hooks/use-router.ts",
     "./use-optimistic-route": "./src/client/hooks/use-optimistic-route.ts",
@@ -69,12 +70,12 @@
     "vitest": "^3.2.4"
   },
   "peerDependencies": {
+    "@sentry/cli": "^3.4.0",
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-server-dom-webpack": "catalog:",
     "tailwindcss": ">=4.0.0",
-    "zod": ">=4.0.0",
-    "@sentry/cli": "^3.4.0"
+    "zod": ">=4.0.0"
   },
   "peerDependenciesMeta": {
     "zod": {
@@ -112,6 +113,7 @@
     "picomatch": "^4.0.3",
     "prettier": "^3.6.2",
     "react-refresh": "^0.18.0",
+    "react-transition-progress": "^0.0.4",
     "rolldown": "1.0.0-beta.53",
     "serialize-error": "^12.0.0",
     "server-only": "^0.0.1",

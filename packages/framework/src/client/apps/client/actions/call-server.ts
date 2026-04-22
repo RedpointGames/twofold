@@ -21,7 +21,6 @@ declare global {
 export function callServer(id: string, args: any) {
   return new Promise((resolve, reject) => {
     startTransition(async () => {
-      // console.log("callServer", id, args);
       let temporaryReferences = createTemporaryReferenceSet();
 
       let body = await encodeReply(args, {

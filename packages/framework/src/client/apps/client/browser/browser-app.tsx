@@ -12,6 +12,7 @@ import { ErrorBoundary } from "../components/error-boundary";
 import { CrashBoundary } from "../components/crash-boundary";
 import { RouteStack, RouteStackEntry } from "../contexts/route-stack-context";
 import { InlineRSCStream } from "../components/inline-rsc-stream";
+import { ProgressBarProvider, useProgress } from "react-transition-progress";
 
 declare global {
   interface Window {
@@ -31,7 +32,9 @@ declare global {
 export function BrowserApp() {
   return (
     <CrashBoundary>
-      <Router />
+      <ProgressBarProvider>
+        <Router />
+      </ProgressBarProvider>
     </CrashBoundary>
   );
 }
@@ -42,6 +45,7 @@ function Router() {
   let [routerState, dispatch] = useRouterReducer();
   let [optimisticPath, setOptimisticPath] = useOptimistic(routerState.path);
   let [isTransitioning, startTransition] = useTransition();
+  const startProgress = useProgress();
 
   let navigateToPath = useCallback(
     (
@@ -62,6 +66,7 @@ function Router() {
       let newPath = `${pathname}${url.search}${url.hash}`;
 
       startTransition(() => {
+        startProgress();
         setOptimisticPath(newPath);
         dispatch({
           type: "NAVIGATE",
@@ -100,6 +105,7 @@ function Router() {
 
   let refresh = useCallback(() => {
     startTransition(() => {
+      startProgress();
       dispatch({ type: "REFRESH" });
     });
   }, [dispatch]);
@@ -198,6 +204,7 @@ function Router() {
       ...window.__twofold,
       updateStack(path: string, stack: RouteStackEntry[]) {
         startTransition(() => {
+          startProgress();
           setOptimisticPath(path);
           dispatch({
             type: "UPDATE",
@@ -209,6 +216,7 @@ function Router() {
       },
       navigate(path: string) {
         startTransition(() => {
+          startProgress();
           setOptimisticPath(path);
           dispatch({
             type: "NAVIGATE",

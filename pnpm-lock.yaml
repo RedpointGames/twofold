@@ -15,9 +15,6 @@ catalogs:
     '@types/react-dom':
       specifier: ^19.2.3
       version: 19.2.3
-    esbuild:
-      specifier: 0.28.0
-      version: 0.28.0
     react:
       specifier: 19.2.5
       version: 19.2.5
@@ -296,7 +293,7 @@ importers:
         version: link:../server-function-transforms
       '@ryanto/esbuild-plugin-tailwind':
         specifier: ^0.0.3
-        version: 0.0.3(esbuild@0.28.0)(tailwindcss@4.2.2)
+        version: 0.0.3(esbuild@0.28.0)(tailwindcss@4.2.4)
       '@sentry/node':
         specifier: ^10.49.0
         version: 10.49.0
@@ -363,6 +360,9 @@ importers:
       react-server-dom-webpack:
         specifier: 'catalog:'
         version: 19.2.5(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(webpack@5.106.2(esbuild@0.28.0))
+      react-transition-progress:
+        specifier: ^0.0.4
+        version: 0.0.4(framer-motion@12.38.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(react@19.2.5)
       rolldown:
         specifier: 1.0.0-beta.53
         version: 1.0.0-beta.53(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)
@@ -377,7 +377,7 @@ importers:
         version: 2.0.2
       tailwindcss:
         specifier: '>=4.0.0'
-        version: 4.2.2
+        version: 4.2.4
       urlpattern-polyfill:
         specifier: 10.1.0
         version: 10.1.0
@@ -4369,6 +4369,16 @@ packages:
       '@types/react':
         optional: true
 
+  react-transition-progress@0.0.4:
+    resolution: {integrity: sha512-ESnG9ccV48EhQ4iZuuH8QQfImgtC+iOfqZzEyWCMEHDOb7LtfNIh2DQnLo2CuwQqC+zf8Ka7a9Hkv8TVU6F+Ag==}
+    peerDependencies:
+      framer-motion: '*'
+      next: '*'
+      react: '*'
+    peerDependenciesMeta:
+      next:
+        optional: true
+
   react@19.2.5:
     resolution: {integrity: sha512-llUJLzz1zTUBrskt2pwZgLq59AemifIftw4aB7JxOqf1HY2FDaGDxgwpAPVzHU1kdWabH7FauP4i1oEeer2WCA==}
     engines: {node: '>=0.10.0'}
@@ -6513,13 +6523,13 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.60.2':
     optional: true
 
-  '@ryanto/esbuild-plugin-tailwind@0.0.3(esbuild@0.28.0)(tailwindcss@4.2.2)':
+  '@ryanto/esbuild-plugin-tailwind@0.0.3(esbuild@0.28.0)(tailwindcss@4.2.4)':
     dependencies:
       '@tailwindcss/node': 4.2.4
       '@tailwindcss/oxide': 4.1.14
       esbuild: 0.28.0
       lightningcss: 1.32.0
-      tailwindcss: 4.2.2
+      tailwindcss: 4.2.4
 
   '@sentry-internal/browser-utils@10.49.0':
     dependencies:
@@ -8874,6 +8884,11 @@ snapshots:
       tslib: 2.8.1
     optionalDependencies:
       '@types/react': 19.2.14
+
+  react-transition-progress@0.0.4(framer-motion@12.38.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(react@19.2.5):
+    dependencies:
+      framer-motion: 12.38.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      react: 19.2.5
 
   react@19.2.5: {}
 
