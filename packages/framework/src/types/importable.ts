@@ -1,6 +1,7 @@
 // these types are importable by the application
 
 import type { ReactNode } from "react";
+import { UserConfig } from "vite";
 
 export type PageProps<T extends string | never = never> = {
   params: Record<T, string>;
@@ -30,8 +31,9 @@ export type APIProps<T extends string | never = never> = {
 };
 
 export type Config = {
-  externalPackages?: string[];
-  bundlePackages?: string[];
-  reactCompiler?: boolean;
-  trustProxy?: boolean;
+  experimental_viteConfig?: {
+    dev?: UserConfig;
+    build?: UserConfig;
+    preview?: UserConfig;
+  };
 };

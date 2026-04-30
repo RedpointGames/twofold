@@ -3,12 +3,13 @@ import "dotenv/config";
 import { Command } from "commander";
 import * as vite from "vite";
 import { withTwofold } from "./vite/plugins.js";
-import { chmodSync } from "node:fs";
+import { chmodSync, existsSync } from "node:fs";
 import { copyFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import kleur from "kleur";
 import { randomBytes } from "node:crypto";
+import { Config } from "../types/importable.js";
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
@@ -32,6 +33,20 @@ let hasRequiredNodeVersion =
 if (!hasRequiredNodeVersion) {
   console.log("You must use Node.js version 22.20.0 or higher to run twofold.");
   process.exit(1);
+}
+
+async function loadConfig(): Promise<Config | undefined> {
+  let config: Config | undefined;
+  if (
+    existsSync("config/application.ts") ||
+    existsSync("config/application.js")
+  ) {
+    const imported = await vite.runnerImport<{ default: Config }>(
+      "/config/application",
+    );
+    config = imported.module.default;
+  }
+  return config;
 }
 
 let program = new Command();
@@ -88,9 +103,12 @@ program
     ): Promise<vite.ViteDevServer> {
       const port = parseInt(options.port, 10) || 3000;
       const server = await vite.createServer(
-        withTwofold({
-          server: { host: "0.0.0.0", port },
-        }),
+        vite.mergeConfig(
+          withTwofold({
+            server: { host: "0.0.0.0", port },
+          }),
+          (await loadConfig())?.experimental_viteConfig?.dev ?? {},
+        ),
       );
       const handleServerRestart = createServerRestartHandler();
       await server.listen();
@@ -105,7 +123,10 @@ program
         const relativePath = path
           .relative(process.cwd(), changedFile)
           .replaceAll("\\", "/");
-        if (relativePath.startsWith("app/")) {
+        if (
+          relativePath.startsWith("app/") ||
+          relativePath.startsWith("config/")
+        ) {
           await handleServerRestart(server);
         }
       }
@@ -126,7 +147,12 @@ program
   .description("Build the project for production")
   .action(async () => {
     process.env.NODE_ENV = "production";
-    const builder = await vite.createBuilder(withTwofold({}));
+    const builder = await vite.createBuilder(
+      vite.mergeConfig(
+        withTwofold({}),
+        (await loadConfig())?.experimental_viteConfig?.build ?? {},
+      ),
+    );
     await builder.buildApp();
     await copyFile(
       path.join(__dirname, "vite/production/server.js"),
@@ -157,11 +183,14 @@ program
     process.env.NODE_ENV = "production";
     const port = parseInt(options.port, 10) || 3000;
     const previewServer = await vite.preview(
-      withTwofold({
-        preview: {
-          port: port,
-        },
-      }),
+      vite.mergeConfig(
+        withTwofold({
+          preview: {
+            port: port,
+          },
+        }),
+        (await loadConfig())?.experimental_viteConfig?.preview ?? {},
+      ),
     );
     await previewServer.printUrls();
     await previewServer.bindCLIShortcuts({ print: true });
