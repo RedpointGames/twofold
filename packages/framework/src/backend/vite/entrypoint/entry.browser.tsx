@@ -84,7 +84,7 @@ function Router() {
         });
       });
     },
-    [dispatch, setOptimisticPath],
+    [dispatch, setOptimisticPath, startProgress],
   );
 
   let navigate = useCallback(
@@ -115,8 +115,8 @@ function Router() {
     });
   }, [dispatch]);
 
-  if (import.meta.hot) {
-    useEffect(() => {
+  useEffect(() => {
+    if (import.meta.hot) {
       const onRscReload = () => {
         console.log("[rsc:update] refreshing page due to RSC change...");
         refresh();
@@ -129,8 +129,8 @@ function Router() {
           import.meta.hot.off("rsc:update", onRscReload);
         }
       };
-    });
-  }
+    }
+  });
 
   useEffect(() => {
     function onPopState(event: PopStateEvent) {
@@ -258,7 +258,7 @@ function Router() {
         delete window.__twofold.navigate;
       }
     };
-  }, [dispatch, setOptimisticPath]);
+  }, [dispatch, setOptimisticPath, startProgress]);
 
   let url = useURLFromPath(routerState.path);
   let optimisticURL = useURLFromPath(optimisticPath);
