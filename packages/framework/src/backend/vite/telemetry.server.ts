@@ -41,6 +41,9 @@ function logError(context: ServerErrorContext, isCatastrophic?: boolean) {
     case "ssr":
       location = " [SSR]";
       break;
+    case "client-asset":
+      location = " [Client Asset]";
+      break;
     default:
       location = "";
       break;
@@ -286,6 +289,22 @@ export const serverTelemetry = defineServerTelemetry_requireAllHooks({
         status: 403,
       });
     }
+  },
+
+  async onServerSideDeniedAccessToClientAsset(context) {
+    if (appServerTelemetry?.onServerSideDeniedAccessToClientAsset) {
+      let appResult =
+        await appServerTelemetry.onServerSideDeniedAccessToClientAsset(context);
+      if (!isDefaultTelemetryBehaviour(appResult) && appResult) {
+        return appResult;
+      }
+    }
+
+    logError(context);
+
+    return new Response("Access denied to protected asset", {
+      status: 403,
+    });
   },
 
   async getTraceMetaHeadersForBrowser(context: ServerTracingContext) {

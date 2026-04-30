@@ -353,6 +353,12 @@ export default function Control(props: { allowIfCookieSetWillPass: boolean }) {
               <TestLink href="/auth/protected/unprotected/api?auth-behaviour=allow" />
             </Td>
           </tr>
+          <tr style={{ borderTop: "solid 1px #000" }}>
+            <th>Protected client component from unprotected page</th>
+            <Td>
+              <TestLink href="/auth/protected/unprotected/page/client" />
+            </Td>
+          </tr>
         </tbody>
       </table>
 

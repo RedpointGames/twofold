@@ -18,6 +18,11 @@ export type AuthPolicyProps =
       request: Request;
       routeParams: Record<string, string | undefined>;
       authCache: Map<string, unknown>;
+    }
+  | {
+      type: "client-asset";
+      request: Request;
+      authCache: Map<string, unknown>;
     };
 
 /**

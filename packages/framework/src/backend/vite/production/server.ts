@@ -24,6 +24,9 @@ program
 
     const router = createRouter<NodePlatformInfo>();
 
+    // Register early middleware to guard static files.
+    applicationRouter.registerMiddlewareToRouter(router);
+
     // Serve static files.
     const staticRoot = new URL("./client", import.meta.url);
     const staticFiles = walk(staticRoot, { prune: [] });

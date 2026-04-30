@@ -3,7 +3,13 @@ import "dotenv/config";
 import { Command } from "commander";
 import * as vite from "vite";
 import { withTwofold } from "./vite/plugins.js";
-import { chmodSync, existsSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import {
+  chmodSync,
+  existsSync,
+  readFileSync,
+  statSync,
+  writeFileSync,
+} from "node:fs";
 import { copyFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -144,7 +150,11 @@ program
         vite.mergeConfig(
           withTwofold(
             {
-              server: { host: "0.0.0.0", port, https: https ? await generateHttps() : undefined },
+              server: {
+                host: "0.0.0.0",
+                port,
+                https: https ? await generateHttps() : undefined,
+              },
             },
             false,
           ),

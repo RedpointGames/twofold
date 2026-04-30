@@ -1,7 +1,15 @@
+import type { Layout } from "../build/rsc/layout";
 import type { RenderRequest } from "./entrypoint/request.server";
+import type { Page } from "../build/rsc/page";
 import type { ReplacementResponse } from "./replacement-response";
 import type { ApplicationRuntime } from "./router";
 import type { ErrorInfo } from "react";
+
+export interface ServerErrorContextAuthExtendedInfo {
+  relatedId: string;
+  appPath: string | undefined;
+  applicableAuthEntity: Page | Layout | undefined;
+}
 
 /**
  * Context provided when errors are caught on the server.
@@ -20,7 +28,9 @@ export interface ServerErrorContext {
     | "action-request"
     | "action-form"
     | "ssr"
+    | "client-asset"
     | undefined;
+  authExtendedInfo?: ServerErrorContextAuthExtendedInfo;
 }
 
 /**
@@ -161,6 +171,15 @@ export interface ServerTelemetry {
    * If you do not return a replacement response here, the default behaviour will always run and replace the response. It is not possible to use this hook to continue execution when access is denied.
    */
   onServerSideApiAuthUnknownError?: TelemetryHook<
+    (context: ServerErrorContext) => Promise<TelemetryDefaultable<Response>>
+  >;
+
+  /**
+   * Called when authentication policies run for a client asset and deny access to the resource, optionally with an error. In this case access is denied and the result of this function is the response.
+   *
+   * If you do not return a replacement response here, the default behaviour will always run and replace the response. It is not possible to use this hook to continue execution when access is denied.
+   */
+  onServerSideDeniedAccessToClientAsset?: TelemetryHook<
     (context: ServerErrorContext) => Promise<TelemetryDefaultable<Response>>
   >;
 

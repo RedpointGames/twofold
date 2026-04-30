@@ -5,6 +5,9 @@ import tailwindcss from "@tailwindcss/vite";
 import { RscPluginManager } from "@vitejs/plugin-rsc/plugin";
 import { exactRegex, prefixRegex } from "@rolldown/pluginutils";
 import path from "node:path";
+import xxhash from "xxhash-wasm";
+
+const xxhash64 = await xxhash();
 
 function createVirtualPlugin(
   name: string,
@@ -232,7 +235,7 @@ function twofoldServerReferencesMetaMapBuild(baseDir: string): Plugin {
       handler(id) {
         if (id === resolvedId) {
           if (this.environment.mode === "dev") {
-            return `export {}`;
+            return `export default {}`;
           }
           let referencesToAppPaths: string[] = [];
           for (const key of Object.getOwnPropertyNames(
@@ -251,6 +254,58 @@ function twofoldServerReferencesMetaMapBuild(baseDir: string): Plugin {
             referencesToAppPaths.push(`\
   ${JSON.stringify(value.referenceKey)}: {
     loadModule: () => import(${JSON.stringify(value.importId)}),
+    appPath: ${JSON.stringify(appPath)}
+  }
+`);
+          }
+          return `
+export default {
+  ${referencesToAppPaths.join(",\n")}
+}
+`;
+        }
+      },
+    },
+  };
+}
+
+function twofoldClientReferencesMetaMapBuild(baseDir: string): Plugin {
+  const virtualId = "virtual:twofold/client-references-meta-map";
+  const resolvedId = "\0" + virtualId;
+  let manager: RscPluginManager;
+  return {
+    name: "twofold:client-references-meta-map-build",
+    async configResolved(config) {
+      manager = getPluginApi(config)!.manager;
+    },
+    resolveId: {
+      filter: { id: exactRegex(virtualId) },
+      handler(source) {
+        if (source === virtualId) {
+          return resolvedId;
+        }
+      },
+    },
+    load: {
+      filter: { id: exactRegex(resolvedId) },
+      handler(id) {
+        if (id === resolvedId) {
+          if (this.environment.mode === "dev") {
+            return `export default {}`;
+          }
+          let referencesToAppPaths: string[] = [];
+          for (const key of Object.getOwnPropertyNames(
+            manager.clientReferenceMetaMap,
+          )) {
+            let appPath = normalizeRelativePathToRoute(
+              path.relative(baseDir, key),
+            );
+            if (appPath === undefined) {
+              continue;
+            }
+            const normalizedId = `p-${xxhash64.h64ToString(key)}`;
+            referencesToAppPaths.push(`\
+  ${JSON.stringify(normalizedId)}: {
     appPath: ${JSON.stringify(appPath)}
   }
 `);
@@ -319,13 +374,22 @@ export function withTwofold(
       },
       plugins: [
         tailwindcss(),
-        rsc({}),
+        rsc({
+          clientChunks(meta) {
+            // use normalizedId to see if this sits underneath app/pages/
+            if (meta.normalizedId.startsWith("app/pages/")) {
+              // but hash on the unique id (absolute path)
+              return `p-${xxhash64.h64ToString(meta.id)}`;
+            }
+          },
+        }),
         react(),
         twofoldServerApplicationRouter(),
         twofoldGlobalMiddleware(baseDir),
         twofoldGlobalAuth(baseDir),
         twofoldServerReferencesMetaMapDev(baseDir),
         twofoldServerReferencesMetaMapBuild(baseDir),
+        twofoldClientReferencesMetaMapBuild(baseDir),
         twofoldTelemetryClient(baseDir),
         twofoldTelemetryServer(baseDir),
       ],

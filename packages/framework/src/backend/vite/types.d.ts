@@ -16,6 +16,15 @@ declare module "virtual:twofold/server-references-meta-map" {
   >;
   export default default_;
 }
+declare module "virtual:twofold/client-references-meta-map" {
+  const default_: Record<
+    string,
+    {
+      appPath: string;
+    }
+  >;
+  export default default_;
+}
 declare module "virtual:twofold/server-global-auth" {
   const default_:
     | ((props: AuthPolicyProps) => Promise<AuthPolicyResult>)

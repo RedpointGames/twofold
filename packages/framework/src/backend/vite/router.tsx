@@ -18,7 +18,7 @@ import xxhash from "xxhash-wasm";
 import type { RouteStackEntry } from "../../client/apps/client/contexts/route-stack-context.js";
 import { getStore, runStore, type Store } from "../stores/rsc-store.js";
 import type { SerializeOptions } from "cookie";
-import { createRouter } from "@hattip/router";
+import { createRouter, Router, RouterContext } from "@hattip/router";
 import { cookie } from "@hattip/cookie";
 import { decrypt, encrypt } from "../encryption.js";
 import { randomBytes } from "node:crypto";
@@ -47,7 +47,10 @@ import {
   MiddlewareMode,
   type ModuleSurface,
 } from "./router-types.js";
-import { lookupServerActionMetadata } from "./router-lookup.js";
+import {
+  lookupClientAssetMetadata,
+  lookupServerActionMetadata,
+} from "./router-lookup.js";
 import {
   getPathForRouterFromRscUrl,
   getPathForRscRequest,
@@ -64,6 +67,8 @@ import {
 import { UnauthorizedError } from "../../client/errors/unauthorized-error.js";
 import { ProxyingRequest } from "../proxying-request.js";
 import { serverTelemetry } from "./telemetry.server.js";
+import { ServerErrorContextAuthExtendedInfo } from "./telemetry.js";
+import kleur from "kleur";
 
 let { h64Raw } = await xxhash();
 
@@ -83,6 +88,9 @@ function componentsToTree<T extends object>(
   }
 }
 
+const protectedAssetPathRegex =
+  /^\/assets\/(p-[0-9a-f]{16})-[a-zA-Z0-9_-]{8}\.js$/;
+
 export class ApplicationRuntime {
   #root: Layout;
   #apiEndpoints: API[];
@@ -96,9 +104,7 @@ export class ApplicationRuntime {
     this.#handler = this.createHandler();
   }
 
-  private createHandler(): HattipHandler<unknown> {
-    const app = createRouter();
-
+  registerMiddlewareToRouter<T>(app: Router<T>) {
     // path normalization
     app.use(async (ctx) => {
       let url = new URL(ctx.request.url);
@@ -266,6 +272,35 @@ export class ApplicationRuntime {
       return runStore(store, () => ctx.next());
     });
 
+    // if this is production, register the authentication guard for static assets
+    if (process.env.NODE_ENV === "production") {
+      app.use(async (ctx) => {
+        const url = new URL(ctx.request.url);
+        if (url.pathname.toLowerCase().startsWith("/assets/p-")) {
+          const match = protectedAssetPathRegex.exec(url.pathname);
+          if (!match || match[1] === undefined) {
+            return new Response("access denied to protected asset (code 0x1)", {
+              status: 403,
+            });
+          } else {
+            return await this.runAuthForStaticAssetFromContext(ctx, match[1]);
+          }
+        }
+      });
+    }
+  }
+
+  private createHandler(): HattipHandler<unknown> {
+    const app = createRouter();
+
+    // When we're running in production, the server entrypoint
+    // creates an outer router since it needs to also serve
+    // static files. It will call registerMiddlewareToRouter in
+    // that case.
+    if (process.env.NODE_ENV !== "production") {
+      this.registerMiddlewareToRouter(app);
+    }
+
     // global middleware
     // @note: This used to be before errors and request store setup, but we want to be able to capture errors from global middleware.
     app.use(async (ctx) => {
@@ -427,6 +462,81 @@ export class ApplicationRuntime {
       waitUntil: () => {},
     };
     return await this.#handler(context);
+  }
+
+  private async runAuthForStaticAssetFromContext(
+    ctx: RouterContext<unknown, unknown>,
+    protectedIdPrefixOnly: string,
+  ): Promise<Response | undefined> {
+    const unauthorizedAsset = async (
+      authExtendedInfo: ServerErrorContextAuthExtendedInfo,
+      error?: Error,
+    ): Promise<Response> => {
+      return serverTelemetry.onServerSideDeniedAccessToClientAsset({
+        applicationRuntime: this,
+        url: new URL(ctx.request.url),
+        renderRequest: await parseRenderRequest(ctx.request),
+        error: error ?? new UnauthorizedError(),
+        willRecover: false,
+        location: "client-asset",
+        authExtendedInfo,
+      });
+    };
+
+    const clientAssetMetadata = await lookupClientAssetMetadata(
+      protectedIdPrefixOnly,
+    );
+    if (clientAssetMetadata === undefined) {
+      return await unauthorizedAsset({
+        relatedId: protectedIdPrefixOnly,
+        appPath: undefined,
+        applicableAuthEntity: undefined,
+      });
+    }
+    const applicableAuthEntity =
+      this.#root.tree.findNearestParentAuthForPathlessPath(
+        clientAssetMetadata.appPath,
+      );
+    if (applicableAuthEntity === undefined) {
+      return await unauthorizedAsset({
+        relatedId: protectedIdPrefixOnly,
+        appPath: clientAssetMetadata.appPath,
+        applicableAuthEntity: undefined,
+      });
+    }
+
+    const request = new ProxyingRequest(ctx.request);
+    const authResponse = await evaluatePolicyArray(applicableAuthEntity, {
+      type: "client-asset",
+      request,
+      authCache: new Map<string, unknown>(),
+    });
+    if (!authResponse.__allow) {
+      if (authResponse.__error) {
+        return await unauthorizedAsset(
+          {
+            relatedId: protectedIdPrefixOnly,
+            appPath: clientAssetMetadata.appPath,
+            applicableAuthEntity: applicableAuthEntity,
+          },
+          authResponse.__error,
+        );
+      } else {
+        return await unauthorizedAsset({
+          relatedId: protectedIdPrefixOnly,
+          appPath: clientAssetMetadata.appPath,
+          applicableAuthEntity: applicableAuthEntity,
+        });
+      }
+    }
+
+    console.log(
+      `${kleur["green"](`[Allowed]`)} [Client Asset] %s -> Governed by app path '%s', access permitted by '%s'`,
+      request.url,
+      clientAssetMetadata.appPath,
+      `${applicableAuthEntity instanceof Page ? "page" : "layout"}: ${applicableAuthEntity?.path}`,
+    );
+    return undefined;
   }
 
   private findApi(request: Request): API | undefined {
