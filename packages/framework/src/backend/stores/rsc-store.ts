@@ -30,6 +30,7 @@ export type Store = {
   flash: {
     add(message: JSONValue): void;
   };
+  request: Request;
   context: {
     type: "page";
     request: Request;

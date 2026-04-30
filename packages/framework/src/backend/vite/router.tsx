@@ -257,6 +257,7 @@ export class ApplicationRuntime {
             });
           },
         },
+        request: ctx.request,
         context: null,
         assets: [],
         authCache: new Map<string, unknown>(),
