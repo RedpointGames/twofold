@@ -1,0 +1,68 @@
+name: Build and Publish
+
+on:
+  push: {}
+  pull_request: {}
+
+permissions:
+  id-token: write
+  packages: write
+
+jobs:
+  build-and-publish:
+    name: "Build and Publish"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
+      - name: Rename all package references
+        run: |
+          find . \( -type d -name .git -prune \) -o -type f -print0 | xargs -0 sed -i 's/@twofold\/framework/@redpointgames\/framework/g'
+      - name: Set package versions
+        run: |
+          # discover package files
+          export PACKAGE_JSON_FILES=$(find . -name package.json -not -path "*/node_modules/*")
+
+          # generate version
+          export PACKAGE_VERSION_SUFFIX="dev$(date +%Y%m%d%H%M%S)"
+
+          # set repository
+          for PACKAGE_JSON in $PACKAGE_JSON_FILES; do jq ".repository |= \"https://github.com/$GITHUB_REPOSITORY\"" $PACKAGE_JSON > $PACKAGE_JSON.tmp; mv $PACKAGE_JSON.tmp $PACKAGE_JSON; done
+
+          # update versions
+          for PACKAGE_JSON in $PACKAGE_JSON_FILES; do jq ".version |= (match(\"^([0-9.]+)\").captures[0].string + \"-$PACKAGE_VERSION_SUFFIX\")" $PACKAGE_JSON > $PACKAGE_JSON.tmp; mv $PACKAGE_JSON.tmp $PACKAGE_JSON; done
+      - name: Install Dependencies
+        run: |
+          corepack enable
+          pnpm i --frozen-lockfile
+      - name: Compile
+        run: |
+          pnpm compile
+      - name: Lint
+        run: |
+          pushd packages/framework
+          pnpm lint
+          popd
+      - name: Test
+        run: |
+          pushd packages/framework
+          pnpm test
+          popd
+      - name: Push to NPM
+        if: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
+        run: |
+          pushd packages/framework
+          cat >.npmrc <<EOF
+          @${PACKAGE_NAMESPACE}:registry=https://registry.npmjs.org/
+          always-auth=true
+          EOF
+          pnpm publish --no-git-checks --tag latest --access public
+          popd

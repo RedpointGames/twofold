@@ -1,0 +1,2 @@
+# prevent Git from merging the lockfile in a way that makes it corrupt
+pnpm-lock.yaml binary
