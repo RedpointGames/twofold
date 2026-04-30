@@ -375,6 +375,14 @@ export class ApplicationRuntime {
         "must have a response or RSC stream by this point",
       );
 
+      // Get the additional meta headers for distributed tracing.
+      const telemetryTraceMetaHeaders =
+        (await serverTelemetry.getTraceMetaHeadersForBrowser({
+          applicationRuntime: this,
+          url,
+          request,
+        })) ?? {};
+
       // Use SSR module to render RSC stream to HTML.
       const ssrEntryModule = await import.meta.viteRsc.loadModule<
         typeof import("./entrypoint/entry.ssr.js")
@@ -385,6 +393,7 @@ export class ApplicationRuntime {
           url: url,
           formState: actionResult?.formState,
           debugNojs: url.searchParams.has("__nojs"),
+          telemetryTraceMetaHeaders,
         },
       );
       return new Response(ssrStream, {

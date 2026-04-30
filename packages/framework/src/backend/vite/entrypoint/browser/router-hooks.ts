@@ -275,7 +275,7 @@ async function fetchRscPayload(
 ): Promise<RscPayload> {
   const initiator = options.initiator ?? "not-specified";
   const targetUrl = new URL(path, window.location.href).href;
-  const renderRequest = createRscRenderRequest(targetUrl, { initiator });
+  const renderRequest = await createRscRenderRequest(targetUrl, { initiator });
   const renderUrl = new URL(renderRequest.url);
   const cacheKey = `${initiator}:${getPathForRouterFromRscUrl(renderUrl)}`;
   if (!fetchCache.has(cacheKey)) {

@@ -55,7 +55,7 @@ export async function fetchPageAsRscPayload(
 
 export async function callServerAction(id: string, args: any) {
   const temporaryReferences = createTemporaryReferenceSet();
-  const renderRequest = createRscActionRequest(
+  const renderRequest = await createRscActionRequest(
     id,
     await encodeReply(args, { temporaryReferences }),
   );

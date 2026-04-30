@@ -9,6 +9,24 @@ import { RoutingContext } from "../../../client/apps/client/contexts/routing-con
 import { ProgressBarProvider } from "react-transition-progress";
 import { clientTelemetry } from "../telemetry.client.js";
 
+function MetaHeaders(props: {
+  telemetryTraceMetaHeaders: { [name: string]: string };
+}) {
+  let metaHeaders = [];
+  for (const name of Object.getOwnPropertyNames(
+    props.telemetryTraceMetaHeaders,
+  )) {
+    metaHeaders.push(
+      <meta
+        key={name}
+        name={name}
+        content={props.telemetryTraceMetaHeaders[name]}
+      />,
+    );
+  }
+  return metaHeaders;
+}
+
 function PageRequiresJavaScript() {
   return (
     <div
@@ -37,7 +55,11 @@ function PageRequiresJavaScript() {
   );
 }
 
-function SsrApp(props: { url: URL; payload: Promise<RscPayload> }) {
+function SsrApp(props: {
+  url: URL;
+  payload: Promise<RscPayload>;
+  telemetryTraceMetaHeaders: { [name: string]: string };
+}) {
   let navigate = () => {
     throw new Error("Cannot call navigate during SSR");
   };
@@ -53,22 +75,27 @@ function SsrApp(props: { url: URL; payload: Promise<RscPayload> }) {
   let routeStack = React.use(props.payload).stack;
 
   return (
-    <ProgressBarProvider>
-      <RoutingContext
-        version={1}
-        path={props.url.pathname}
-        mask={undefined}
-        searchParams={props.url.searchParams}
-        optimisticPath={props.url.pathname}
-        optimisticSearchParams={props.url.searchParams}
-        isTransitioning={false}
-        navigate={navigate}
-        replace={replace}
-        refresh={refresh}
-      >
-        <RouteStack stack={routeStack} />
-      </RoutingContext>
-    </ProgressBarProvider>
+    <>
+      <MetaHeaders
+        telemetryTraceMetaHeaders={props.telemetryTraceMetaHeaders}
+      />
+      <ProgressBarProvider>
+        <RoutingContext
+          version={1}
+          path={props.url.pathname}
+          mask={undefined}
+          searchParams={props.url.searchParams}
+          optimisticPath={props.url.pathname}
+          optimisticSearchParams={props.url.searchParams}
+          isTransitioning={false}
+          navigate={navigate}
+          replace={replace}
+          refresh={refresh}
+        >
+          <RouteStack stack={routeStack} />
+        </RoutingContext>
+      </ProgressBarProvider>
+    </>
   );
 }
 
@@ -79,6 +106,7 @@ export async function renderHtml(
     formState?: ReactFormState;
     nonce?: string;
     debugNojs?: boolean;
+    telemetryTraceMetaHeaders: { [name: string]: string };
   },
 ): Promise<ReadableStream<Uint8Array>> {
   const [rscStreamForSsr, rscStreamForBrowserFlightData] = rscStream.tee();
@@ -90,6 +118,9 @@ export async function renderHtml(
       <Suspense
         fallback={
           <html>
+            <MetaHeaders
+              telemetryTraceMetaHeaders={options.telemetryTraceMetaHeaders}
+            />
             <body>
               {!options.debugNojs ? (
                 <noscript>
@@ -102,7 +133,11 @@ export async function renderHtml(
           </html>
         }
       >
-        <SsrApp url={options.url} payload={payload} />
+        <SsrApp
+          url={options.url}
+          payload={payload}
+          telemetryTraceMetaHeaders={options.telemetryTraceMetaHeaders}
+        />
       </Suspense>
     );
   }

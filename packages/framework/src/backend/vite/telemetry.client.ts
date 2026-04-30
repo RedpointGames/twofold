@@ -5,6 +5,7 @@ import {
 } from "../runtime/helpers/errors.js";
 import {
   ClientErrorContext,
+  ClientTracingContext,
   defineClientTelemetry_requireAllHooks,
   isDefaultTelemetryBehaviour,
 } from "./telemetry.js";
@@ -27,6 +28,18 @@ export const clientTelemetry = defineClientTelemetry_requireAllHooks({
       // These should already have been reported by the server.
     } else {
       console.error(context.error);
+    }
+  },
+
+  async getTraceHttpHeadersForServerAction(context: ClientTracingContext) {
+    if (appClientTelemetry?.getTraceHttpHeadersForServerAction) {
+      return appClientTelemetry.getTraceHttpHeadersForServerAction(context);
+    }
+  },
+
+  async getTraceHttpHeadersForRscPageLoad(context: ClientTracingContext) {
+    if (appClientTelemetry?.getTraceHttpHeadersForRscPageLoad) {
+      return appClientTelemetry.getTraceHttpHeadersForRscPageLoad(context);
     }
   },
 });
