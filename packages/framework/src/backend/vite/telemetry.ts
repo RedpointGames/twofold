@@ -23,6 +23,15 @@ export interface ServerErrorContext {
 }
 
 /**
+ * Context for tracing events on the server.
+ */
+export interface ServerTracingContext {
+  applicationRuntime: ApplicationRuntime;
+  url: URL;
+  request: Request;
+}
+
+/**
  * Context provided when errors are caught on the client.
  */
 export type ClientErrorContext = {
@@ -46,6 +55,16 @@ export type ClientErrorContext = {
       type: "recoverable";
     }
 );
+
+/**
+ * Context for tracing events on the client.
+ */
+export type ClientTracingContext = {
+  isSsr: boolean;
+  path: string;
+  actionId?: string;
+  actionBody?: BodyInit;
+};
 
 /**
  * All telemetry hooks are optional. If not specified, the default behaviour will apply.
@@ -154,6 +173,15 @@ export interface ServerTelemetry {
   onServerSideApiAuthUnknownError?: TelemetryHook<
     (context: ServerErrorContext) => Promise<TelemetryDefaultable<Response>>
   >;
+
+  /**
+   * Called to get the additional <meta> headers that should be sent to the browser, so browser telemetry can be associated with the original request in distributed tracing.
+   */
+  getTraceMetaHeadersForBrowser?: TelemetryHook<
+    (
+      context: ServerTracingContext,
+    ) => Promise<{ [name: string]: string } | undefined>
+  >;
 }
 
 /**
@@ -165,6 +193,24 @@ export interface ClientTelemetry {
    */
   onClientSideRenderError?: TelemetryHook<
     (context: ClientErrorContext) => TelemetryDefaultable<void>
+  >;
+
+  /**
+   * Called to get the additional HTTP headers that should be sent when making requests to the server, so that server actions can be associated with the original request in distributed tracing.
+   */
+  getTraceHttpHeadersForServerAction?: TelemetryHook<
+    (
+      context: ClientTracingContext,
+    ) => Promise<{ [name: string]: string } | undefined>
+  >;
+
+  /**
+   * Called to get the additional HTTP headers that should be sent when making RSC page requests to the server, so that subsequent navigations can be associated with the original request in distributed tracing.
+   */
+  getTraceHttpHeadersForRscPageLoad?: TelemetryHook<
+    (
+      context: ClientTracingContext,
+    ) => Promise<{ [name: string]: string } | undefined>
   >;
 }
 

@@ -10,8 +10,12 @@ import {
   twofoldInitiator,
   TwofoldInitiator,
 } from "./request.js";
+import { clientTelemetry } from "../telemetry.client.js";
 
-export function createRscActionRequest(id: string, body: BodyInit): Request {
+export async function createRscActionRequest(
+  id: string,
+  body: BodyInit,
+): Promise<Request> {
   const browserPath = getPathForRouterFromRscUrl(location);
   const twofoldPath = window.__twofold?.currentPath;
 
@@ -26,15 +30,21 @@ export function createRscActionRequest(id: string, body: BodyInit): Request {
       [headerTwofoldInitiator]: twofoldInitiator.callServer,
       [headerTwofoldServerReference]: id,
       [headerTwofoldPath]: path,
+      ...((await clientTelemetry.getTraceHttpHeadersForServerAction({
+        isSsr: import.meta.env.SSR,
+        path,
+        actionId: id,
+        actionBody: body,
+      })) ?? {}),
     },
     body: body,
   });
 }
 
-export function createRscRenderRequest(
+export async function createRscRenderRequest(
   path: string,
   options: { initiator?: TwofoldInitiator } = {},
-): Request {
+): Promise<Request> {
   const initiator = options.initiator ?? twofoldInitiator.notSpecified;
 
   return new Request(getPathForRscRequest(path), {
@@ -42,6 +52,10 @@ export function createRscRenderRequest(
     headers: {
       [headerAccept]: contentType.rsc,
       [headerTwofoldInitiator]: initiator,
+      ...((await clientTelemetry.getTraceHttpHeadersForRscPageLoad({
+        isSsr: import.meta.env.SSR,
+        path,
+      })) ?? {}),
     },
   });
 }

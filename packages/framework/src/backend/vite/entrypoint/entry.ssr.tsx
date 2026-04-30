@@ -10,7 +10,11 @@ import ErrorPage from "../../../client/components/error-handling/error-page.js";
 import { ProgressBarProvider } from "react-transition-progress";
 import { clientTelemetry } from "../telemetry.client.js";
 
-function SsrApp(props: { url: URL; payload: Promise<RscPayload> }) {
+function SsrApp(props: {
+  url: URL;
+  payload: Promise<RscPayload>;
+  telemetryTraceMetaHeaders: { [name: string]: string };
+}) {
   let navigate = () => {
     throw new Error("Cannot call navigate during SSR");
   };
@@ -25,23 +29,39 @@ function SsrApp(props: { url: URL; payload: Promise<RscPayload> }) {
 
   let routeStack = React.use(props.payload).stack;
 
+  let metaHeaders = [];
+  for (const name of Object.getOwnPropertyNames(
+    props.telemetryTraceMetaHeaders,
+  )) {
+    metaHeaders.push(
+      <meta
+        key={name}
+        name={name}
+        content={props.telemetryTraceMetaHeaders[name]}
+      />,
+    );
+  }
+
   return (
-    <ProgressBarProvider>
-      <RoutingContext
-        version={1}
-        path={props.url.pathname}
-        mask={undefined}
-        searchParams={props.url.searchParams}
-        optimisticPath={props.url.pathname}
-        optimisticSearchParams={props.url.searchParams}
-        isTransitioning={false}
-        navigate={navigate}
-        replace={replace}
-        refresh={refresh}
-      >
-        <RouteStack stack={routeStack} />
-      </RoutingContext>
-    </ProgressBarProvider>
+    <>
+      {metaHeaders}
+      <ProgressBarProvider>
+        <RoutingContext
+          version={1}
+          path={props.url.pathname}
+          mask={undefined}
+          searchParams={props.url.searchParams}
+          optimisticPath={props.url.pathname}
+          optimisticSearchParams={props.url.searchParams}
+          isTransitioning={false}
+          navigate={navigate}
+          replace={replace}
+          refresh={refresh}
+        >
+          <RouteStack stack={routeStack} />
+        </RoutingContext>
+      </ProgressBarProvider>
+    </>
   );
 }
 
@@ -62,6 +82,7 @@ export async function renderHtmlOrError(
     formState?: ReactFormState;
     nonce?: string;
     debugNojs?: boolean;
+    telemetryTraceMetaHeaders: { [name: string]: string };
   },
 ): Promise<SsrResponse> {
   const [rscStreamForSsr, rscStreamForBrowserFlightData] = rscStream.tee();
@@ -69,7 +90,13 @@ export async function renderHtmlOrError(
   let payload: Promise<RscPayload> | undefined = undefined;
   function SsrRoot() {
     payload ??= createFromReadableStream(rscStreamForSsr);
-    return <SsrApp url={options.url} payload={payload} />;
+    return (
+      <SsrApp
+        url={options.url}
+        payload={payload}
+        telemetryTraceMetaHeaders={options.telemetryTraceMetaHeaders}
+      />
+    );
   }
 
   const bootstrapScriptContent =

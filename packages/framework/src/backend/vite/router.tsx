@@ -362,6 +362,14 @@ export class ApplicationRuntime {
         "must have a response or RSC stream by this point",
       );
 
+      // Get the additional meta headers for distributed tracing.
+      const telemetryTraceMetaHeaders =
+        (await serverTelemetry.getTraceMetaHeadersForBrowser({
+          applicationRuntime: this,
+          url,
+          request,
+        })) ?? {};
+
       // Use SSR module to render RSC stream to HTML.
       const [rscStreamForSsr, rscStreamForRecovery] =
         rscStreamOrResponse.stream.tee();
@@ -372,6 +380,7 @@ export class ApplicationRuntime {
         url: url,
         formState: actionResult?.formState,
         debugNojs: url.searchParams.has("__nojs"),
+        telemetryTraceMetaHeaders,
       });
       if (ssrResult.type === "stream") {
         return new Response(ssrResult.stream, {
@@ -402,6 +411,7 @@ export class ApplicationRuntime {
               url: url,
               formState: actionResult?.formState,
               debugNojs: url.searchParams.has("__nojs"),
+              telemetryTraceMetaHeaders,
             },
           );
           if (ssrReplacementResult.type === "stream") {

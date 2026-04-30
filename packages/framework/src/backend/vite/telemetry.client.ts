@@ -5,6 +5,7 @@ import {
 } from "../runtime/helpers/errors.js";
 import {
   ClientErrorContext,
+  ClientTracingContext,
   defineClientTelemetry_requireAllHooks,
   isDefaultTelemetryBehaviour,
 } from "./telemetry.js";
@@ -28,6 +29,18 @@ export const clientTelemetry = defineClientTelemetry_requireAllHooks({
     } else if (!import.meta.env.SSR) {
       // No need to report in SSR, because they will be reported to onServerSideReceivedSsrError.
       console.error(context.error);
+    }
+  },
+
+  async getTraceHttpHeadersForServerAction(context: ClientTracingContext) {
+    if (appClientTelemetry?.getTraceHttpHeadersForServerAction) {
+      return appClientTelemetry.getTraceHttpHeadersForServerAction(context);
+    }
+  },
+
+  async getTraceHttpHeadersForRscPageLoad(context: ClientTracingContext) {
+    if (appClientTelemetry?.getTraceHttpHeadersForRscPageLoad) {
+      return appClientTelemetry.getTraceHttpHeadersForRscPageLoad(context);
     }
   },
 });

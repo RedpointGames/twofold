@@ -2,6 +2,7 @@ import {
   defaultTelemetryBehaviour,
   defineServerTelemetry,
 } from "@twofold/framework/telemetry";
+import { randomUUID } from "node:crypto";
 
 export default defineServerTelemetry({
   async onServerSideActionError(context) {
@@ -35,5 +36,10 @@ export default defineServerTelemetry({
   async onServerSideReceivedSsrError(context) {
     console.log("kitchen sink custom onServerSideReceivedSsrError");
     return defaultTelemetryBehaviour();
+  },
+  async getTraceMetaHeadersForBrowser(context) {
+    return {
+      "kitchen-sink-trace": randomUUID(),
+    };
   },
 });

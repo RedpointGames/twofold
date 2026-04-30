@@ -10,6 +10,7 @@ import {
   defineServerTelemetry_requireAllHooks,
   isDefaultTelemetryBehaviour,
   ServerErrorContext,
+  ServerTracingContext,
 } from "./telemetry.js";
 import appServerTelemetry from "virtual:twofold/telemetry-server";
 
@@ -317,6 +318,12 @@ export const serverTelemetry = defineServerTelemetry_requireAllHooks({
       return new Response("Access denied due to an internal error", {
         status: 403,
       });
+    }
+  },
+
+  async getTraceMetaHeadersForBrowser(context: ServerTracingContext) {
+    if (appServerTelemetry?.getTraceMetaHeadersForBrowser) {
+      return appServerTelemetry.getTraceMetaHeadersForBrowser(context);
     }
   },
 });
