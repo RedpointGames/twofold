@@ -20,8 +20,8 @@ import { createRoot, hydrateRoot, type RootOptions } from "react-dom/client";
 import { setServerCallback } from "@vitejs/plugin-rsc/browser";
 import { callServerAction } from "./browser/call-server.js";
 import { getInitialPayload } from "./browser/initial-payload.js";
-import { onClientSideRenderError } from "../error-handling.client.js";
 import { ProgressBarProvider, useProgress } from "react-transition-progress";
+import { clientTelemetry } from "../telemetry.client.js";
 
 declare global {
   interface Window {
@@ -320,7 +320,7 @@ async function main() {
 
   const errorOptions: RootOptions = {
     onRecoverableError: (error, errorInfo) => {
-      onClientSideRenderError({
+      clientTelemetry.onClientSideRenderError({
         isSsr: false,
         url: new URL(window.location.href),
         error,
@@ -329,7 +329,7 @@ async function main() {
       });
     },
     onUncaughtError: (error, errorInfo) => {
-      onClientSideRenderError({
+      clientTelemetry.onClientSideRenderError({
         isSsr: false,
         url: new URL(window.location.href),
         error,
@@ -338,7 +338,7 @@ async function main() {
       });
     },
     onCaughtError: (error, errorInfo) => {
-      onClientSideRenderError({
+      clientTelemetry.onClientSideRenderError({
         isSsr: false,
         url: new URL(window.location.href),
         error,

@@ -95,6 +95,36 @@ function twofoldGlobalAuth(baseDir: string): Plugin {
   });
 }
 
+function twofoldTelemetryClient(baseDir: string): Plugin {
+  return createVirtualPlugin("telemetry-client", {
+    async resolveId(_source, _importer, options) {
+      const path = `${baseDir}/app/telemetry.client.ts`;
+      const resolved = await this.resolve(path, undefined, options);
+      return resolved;
+    },
+    load() {
+      return `
+export default undefined;
+`;
+    },
+  });
+}
+
+function twofoldTelemetryServer(baseDir: string): Plugin {
+  return createVirtualPlugin("telemetry-server", {
+    async resolveId(_source, _importer, options) {
+      const path = `${baseDir}/app/telemetry.server.ts`;
+      const resolved = await this.resolve(path, undefined, options);
+      return resolved;
+    },
+    load() {
+      return `
+export default undefined;
+`;
+    },
+  });
+}
+
 function parseIdQuery(id: string): {
   filename: string;
   query: {
@@ -297,6 +327,8 @@ export function withTwofold(
         twofoldGlobalAuth(baseDir),
         twofoldServerReferencesMetaMapDev(baseDir),
         twofoldServerReferencesMetaMapBuild(baseDir),
+        twofoldTelemetryClient(baseDir),
+        twofoldTelemetryServer(baseDir),
       ],
     },
     config ?? {},

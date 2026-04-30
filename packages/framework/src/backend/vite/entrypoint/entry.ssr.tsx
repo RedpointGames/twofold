@@ -6,8 +6,8 @@ import { injectRSCPayload } from "rsc-html-stream/server";
 import type { RscPayload } from "./payload.js";
 import { RouteStack } from "../../../client/apps/client/contexts/route-stack-context.js";
 import { RoutingContext } from "../../../client/apps/client/contexts/routing-context.js";
-import { onClientSideRenderError } from "../error-handling.client.js";
 import { ProgressBarProvider } from "react-transition-progress";
+import { clientTelemetry } from "../telemetry.client.js";
 
 function PageRequiresJavaScript() {
   return (
@@ -118,7 +118,7 @@ export async function renderHtml(
       nonce: options?.nonce,
       formState: options?.formState,
       onError: (error: unknown, errorInfo: ErrorInfo) => {
-        onClientSideRenderError({
+        clientTelemetry.onClientSideRenderError({
           isSsr: true,
           url: options.url,
           error,
