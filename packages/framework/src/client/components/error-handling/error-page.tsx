@@ -234,16 +234,16 @@ export default function ErrorPage(props: ErrorPageProps) {
 
   return (
     <html
-      className={
+      className={`bg-red-50 ${
         process.env.NODE_ENV === "development" ? "development" : "production"
-      }
+      }`}
     >
       <head>
         <link rel="icon" href="data:;base64,iVBORw0KGgo=" />
         <style>{errorPageStyles}</style>
       </head>
       <body>
-        <div className="bg-red-50 h-full">
+        <div className="h-full">
           <div className="p-6 max-w-7xl mx-auto h-full">
             <div className="rounded shadow border border-gray-300 p-6 bg-white">
               <div>
