@@ -36,7 +36,7 @@
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "eslint": "^9.38.0",
+    "eslint": "^10.2.1",
     "eslint-plugin-twofold": "workspace:*",
     "nodemon": "^3.1.14",
     "prettier": "^3.8.3",
