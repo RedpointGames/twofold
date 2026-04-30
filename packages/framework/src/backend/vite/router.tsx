@@ -36,16 +36,6 @@ import {
   headerLocation,
   isContentType,
 } from "./content-types.js";
-import {
-  onServerSideActionError,
-  onServerSideApiAuthUnknownError,
-  onServerSideApiError,
-  onServerSideCatastrophicError,
-  onServerSidePageAuthUnknownError,
-  onServerSidePageMiddlewareError,
-  onServerSidePageRenderError,
-  onServerSideReceivedSsrError,
-} from "./error-handling.server.js";
 import catastrophicErrorHtml from "./catastrophic-internal-error.html?raw";
 import type { NodePlatformInfo } from "@hattip/adapter-node/native-fetch";
 import globalMiddleware from "virtual:twofold/server-global-middleware";
@@ -70,14 +60,9 @@ import {
   evaluatePolicyArray,
   evaluatePolicyArrayToResponse,
 } from "../runtime/helpers/auth.js";
-import {
-  isNotFoundError,
-  isRedirectError,
-  isUnauthorizedError,
-  redirectErrorInfo,
-} from "../runtime/helpers/errors.js";
 import { UnauthorizedError } from "../../client/errors/unauthorized-error.js";
 import { ProxyingRequest } from "../proxying-request.js";
+import { serverTelemetry } from "./telemetry.server.js";
 
 let { h64Raw } = await xxhash();
 
@@ -144,7 +129,7 @@ export class ApplicationRuntime {
         let accepts = parseHeaderValue(request.headers.get(headerAccept));
         let error = e instanceof Error ? e : new Error("Internal server error");
 
-        onServerSideCatastrophicError({
+        await serverTelemetry.onServerSideCatastrophicError({
           applicationRuntime: this,
           url: new URL(request.url),
           request,
@@ -333,7 +318,7 @@ export class ApplicationRuntime {
       // If the action result throws an error, and the error is a safe error, handle it here.
       let rscStreamOrResponse: ReplacementResponse = undefined;
       if (actionResult?.returnValue?.type === "throw") {
-        rscStreamOrResponse = await onServerSideActionError({
+        rscStreamOrResponse = await serverTelemetry.onServerSideActionError({
           applicationRuntime: this,
           url: new URL(request.url),
           request,
@@ -398,16 +383,15 @@ export class ApplicationRuntime {
       }
 
       // Handle known errors from SSR failure.
-      let replacement: ReplacementResponse = await onServerSideReceivedSsrError(
-        {
+      let replacement: ReplacementResponse =
+        await serverTelemetry.onServerSideReceivedSsrError({
           applicationRuntime: this,
           url: url,
           request: request,
           error: ssrResult.error,
           willRecover: true,
           location: "ssr",
-        },
-      );
+        });
       if (replacement) {
         if (replacement instanceof Response) {
           return replacement;
@@ -527,14 +511,15 @@ export class ApplicationRuntime {
         authCache: getStore().authCache,
       },
       async (error) => {
-        const authFailedResponse = await onServerSideApiAuthUnknownError({
-          applicationRuntime: this,
-          url: url,
-          request,
-          error,
-          willRecover: false,
-          location: "api",
-        });
+        const authFailedResponse =
+          await serverTelemetry.onServerSideApiAuthUnknownError({
+            applicationRuntime: this,
+            url: url,
+            request,
+            error,
+            willRecover: false,
+            location: "api",
+          });
         return (
           authFailedResponse ??
           new Response("Access denied due to an internal error", {
@@ -561,7 +546,7 @@ export class ApplicationRuntime {
       ];
       await Promise.all(promises);
     } catch (error: unknown) {
-      return onServerSideApiError({
+      return await serverTelemetry.onServerSideApiError({
         applicationRuntime: this,
         url,
         request,
@@ -582,7 +567,7 @@ export class ApplicationRuntime {
       try {
         response = await module[method](props);
       } catch (error: unknown) {
-        response = onServerSideApiError({
+        response = await serverTelemetry.onServerSideApiError({
           applicationRuntime: this,
           url,
           request,
@@ -778,14 +763,15 @@ export class ApplicationRuntime {
           authCache: getStore().authCache,
         },
         async (error) => {
-          const authFailedResponse = await onServerSidePageAuthUnknownError({
-            applicationRuntime: this,
-            url: url,
-            request,
-            error,
-            willRecover: false,
-            location: "page",
-          });
+          const authFailedResponse =
+            await serverTelemetry.onServerSidePageAuthUnknownError({
+              applicationRuntime: this,
+              url: url,
+              request,
+              error,
+              willRecover: false,
+              location: "page",
+            });
           return (
             authFailedResponse ??
             new Response("Access denied due to an internal error", {
@@ -829,7 +815,7 @@ export class ApplicationRuntime {
     try {
       segments = await page.segments();
     } catch (error: unknown) {
-      return onServerSidePageMiddlewareError({
+      return await serverTelemetry.onServerSidePageMiddlewareError({
         applicationRuntime: this,
         url: url,
         request,
@@ -857,7 +843,7 @@ export class ApplicationRuntime {
         ];
         await Promise.all(promises);
       } catch (error: unknown) {
-        return onServerSidePageMiddlewareError({
+        return await serverTelemetry.onServerSidePageMiddlewareError({
           applicationRuntime: this,
           url: url,
           request,
@@ -925,7 +911,7 @@ export class ApplicationRuntime {
         }
 
         // Otherwise forward error to error handling.
-        return onServerSidePageRenderError({
+        return serverTelemetry.onServerSidePageRenderError({
           applicationRuntime: this,
           url: url,
           request,

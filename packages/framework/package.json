@@ -32,6 +32,7 @@
     "./unauthorized": "./src/client/http/unauthorized.ts",
     "./redirect": "./src/client/http/redirect.ts",
     "./encryption": "./dist/backend/encryption.js",
+    "./telemetry": "./src/backend/vite/telemetry.ts",
     "./context/page": "./src/client/server-context/page.ts",
     "./flash": {
       "react-server": "./src/client/actions/flash.ts",

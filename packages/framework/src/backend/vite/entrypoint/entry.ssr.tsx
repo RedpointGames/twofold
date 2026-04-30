@@ -6,9 +6,9 @@ import { injectRSCPayload } from "rsc-html-stream/server";
 import type { RscPayload } from "./payload.js";
 import { RouteStack } from "../../../client/apps/client/contexts/route-stack-context.js";
 import { RoutingContext } from "../../../client/apps/client/contexts/routing-context.js";
-import { onClientSideRenderError } from "../error-handling.client.js";
 import ErrorPage from "../../../client/components/error-handling/error-page.js";
 import { ProgressBarProvider } from "react-transition-progress";
+import { clientTelemetry } from "../telemetry.client.js";
 
 function SsrApp(props: { url: URL; payload: Promise<RscPayload> }) {
   let navigate = () => {
@@ -83,7 +83,7 @@ export async function renderHtmlOrError(
       nonce: options?.nonce,
       formState: options?.formState,
       onError: (error: unknown, errorInfo: ErrorInfo) => {
-        onClientSideRenderError({
+        clientTelemetry.onClientSideRenderError({
           isSsr: true,
           url: options.url,
           error,

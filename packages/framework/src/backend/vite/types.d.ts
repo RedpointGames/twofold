@@ -22,3 +22,11 @@ declare module "virtual:twofold/server-global-auth" {
     | undefined;
   export default default_;
 }
+declare module "virtual:twofold/telemetry-server" {
+  const default_: ServerTelemetry | undefined;
+  export default default_;
+}
+declare module "virtual:twofold/telemetry-client" {
+  const default_: ClientTelemetry | undefined;
+  export default default_;
+}
