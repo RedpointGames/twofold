@@ -118,6 +118,7 @@
     "kleur": "^4.1.5",
     "mime-types": "^3.0.2",
     "minimatch": "^10.0.3",
+    "mkcert": "^3.2.0",
     "picomatch": "^4.0.4",
     "react-refresh": "^0.18.0",
     "react-transition-progress": "^0.0.4",

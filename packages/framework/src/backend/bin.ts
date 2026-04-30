@@ -3,13 +3,15 @@ import "dotenv/config";
 import { Command } from "commander";
 import * as vite from "vite";
 import { withTwofold } from "./vite/plugins.js";
-import { chmodSync, existsSync } from "node:fs";
+import { chmodSync, existsSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { copyFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import kleur from "kleur";
 import { randomBytes } from "node:crypto";
 import { Config } from "../types/importable.js";
+import { homedir } from "node:os";
+import { createCA, createCert } from "mkcert";
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
@@ -49,6 +51,40 @@ async function loadConfig(): Promise<Config | undefined> {
   return config;
 }
 
+interface SavedCertificate {
+  key: string;
+  cert: string;
+  ca: string;
+}
+
+async function generateHttps() {
+  let httpsCertPath = path.join(homedir(), "twofold-localhost-cert.json");
+  let httpsCert: SavedCertificate;
+  if (statSync(httpsCertPath).isFile()) {
+    httpsCert = JSON.parse(readFileSync(httpsCertPath, "utf8"));
+  } else {
+    const ca = await createCA({
+      organization: "Twofold",
+      countryCode: "US",
+      state: "NA",
+      locality: "NA",
+      validity: 3650,
+    });
+    const cert = await createCert({
+      ca: { key: ca.key, cert: ca.cert },
+      domains: ["127.0.0.1", "localhost"],
+      validity: 3650,
+    });
+    httpsCert = {
+      key: cert.key,
+      cert: cert.cert,
+      ca: ca.cert,
+    };
+    writeFileSync(httpsCertPath, JSON.stringify(httpsCert));
+  }
+  return httpsCert;
+}
+
 let program = new Command();
 
 program.name("twofold").description("Twofold CLI");
@@ -60,6 +96,7 @@ program
     "Port to run the development server on",
     "3000",
   )
+  .option("-h, --https", "Enable HTTPS", false)
   .description("Run the development server")
   .action(async (options) => {
     process.env.NODE_ENV = "development";
@@ -102,11 +139,12 @@ program
       isRestart: boolean,
     ): Promise<vite.ViteDevServer> {
       const port = parseInt(options.port, 10) || 3000;
+      const https = typeof options.https === "boolean" ? options.https : false;
       const server = await vite.createServer(
         vite.mergeConfig(
           withTwofold(
             {
-              server: { host: "0.0.0.0", port },
+              server: { host: "0.0.0.0", port, https: https ? await generateHttps() : undefined },
             },
             false,
           ),

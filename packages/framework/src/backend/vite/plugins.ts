@@ -172,7 +172,6 @@ function twofoldServerReferencesMetaMapDev(baseDir: string): Plugin {
     name: "twofold:server-references-meta-map-dev",
     apply: "serve",
     async configureServer(server) {
-      console.log("twofoldServerActionMetadata: configureServer");
       manager = getPluginApi(server.config)!.manager;
     },
     load: {
