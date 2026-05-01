@@ -129,6 +129,13 @@ export class ApplicationRuntime {
     // cookies
     app.use(cookie());
 
+    // continue trace
+    app.use(async (ctx) => {
+      return await serverTelemetry.continueTraceForRequest(ctx.request, () =>
+        ctx.next(),
+      );
+    });
+
     // fallback error handling - only hit when something catastrophic happens
     app.use(async (ctx) => {
       ctx.handleError = async (e: unknown) => {

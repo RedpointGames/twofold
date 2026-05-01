@@ -312,4 +312,15 @@ export const serverTelemetry = defineServerTelemetry_requireAllHooks({
       return appServerTelemetry.getTraceMetaHeadersForBrowser(context);
     }
   },
+
+  async continueTraceForRequest(
+    request: Request,
+    next: () => Promise<Response>,
+  ) {
+    if (appServerTelemetry?.continueTraceForRequest) {
+      return await appServerTelemetry.continueTraceForRequest(request, next);
+    }
+
+    return await next();
+  },
 });

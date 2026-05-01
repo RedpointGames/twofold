@@ -38,4 +38,11 @@ export default defineServerTelemetry({
       "kitchen-sink-trace": randomUUID(),
     };
   },
+  async continueTraceForRequest(request, next) {
+    const kitchenSinkTrace = request.headers.get("kitchen-sink-trace");
+    if (kitchenSinkTrace) {
+      console.log(`continuing with trace header '${kitchenSinkTrace}'`);
+    }
+    return await next();
+  },
 });

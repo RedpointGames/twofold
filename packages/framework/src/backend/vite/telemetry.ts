@@ -191,6 +191,13 @@ export interface ServerTelemetry {
       context: ServerTracingContext,
     ) => Promise<{ [name: string]: string } | undefined>
   >;
+
+  /**
+   * Called on the server right before error handling is registered in the request pipeline. If you are using distributed tracing, you can use this to run the request inside the context of the current trace.
+   */
+  continueTraceForRequest?: TelemetryHook<
+    (request: Request, next: () => Promise<Response>) => Promise<Response>
+  >;
 }
 
 /**
