@@ -34,6 +34,7 @@
     "./redirect": "./src/client/http/redirect.ts",
     "./encryption": "./dist/backend/encryption.js",
     "./telemetry": "./src/backend/vite/telemetry.ts",
+    "./errors": "./src/backend/runtime/helpers/errors.ts",
     "./context/page": "./src/client/server-context/page.ts",
     "./flash": {
       "react-server": "./src/client/actions/flash.ts",
