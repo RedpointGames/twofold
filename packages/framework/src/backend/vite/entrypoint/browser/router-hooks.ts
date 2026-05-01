@@ -5,6 +5,7 @@ import { getInitialPayload } from "./initial-payload.js";
 import { fetchPageAsRscPayload } from "./call-server.js";
 import { createRscRenderRequest } from "../request.client.js";
 import { TwofoldInitiator, getPathForRouterFromRscUrl } from "../request.js";
+import { clientTelemetry } from "../../telemetry.client.js";
 
 type State = {
   version: number;
@@ -108,6 +109,11 @@ function reducer(state: Promise<State>, action: Action): Promise<State> {
           let path = action.path;
 
           if (action.fetch) {
+            await clientTelemetry.onClientSideNavigationBegin({
+              path: action.path,
+              type: "navigate",
+            });
+
             let rsc = await fetchRscPayload(action.path, {
               initiator: "client-side-navigation",
             });
@@ -134,6 +140,11 @@ function reducer(state: Promise<State>, action: Action): Promise<State> {
         async reduce() {
           let previous = await state;
 
+          await clientTelemetry.onClientSideNavigationBegin({
+            path: action.path,
+            type: "back",
+          });
+
           return {
             ...previous,
             version: previous.version + 1,
@@ -149,6 +160,12 @@ function reducer(state: Promise<State>, action: Action): Promise<State> {
         cacheKey: `refresh`,
         async reduce() {
           let previous = await state;
+
+          await clientTelemetry.onClientSideNavigationBegin({
+            path: previous.path,
+            type: "refresh",
+          });
+
           let rsc = await fetchRscPayload(previous.path, {
             initiator: "refresh",
           });
@@ -203,6 +220,12 @@ function reducer(state: Promise<State>, action: Action): Promise<State> {
         cacheKey: `populate-${action.path}`,
         async reduce() {
           let previous = await state;
+
+          await clientTelemetry.onClientSideNavigationBegin({
+            path: action.path,
+            type: "navigate",
+          });
+
           let rsc = await fetchRscPayload(action.path, {
             initiator: "populate",
           });

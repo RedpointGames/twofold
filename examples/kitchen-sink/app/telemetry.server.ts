@@ -39,9 +39,11 @@ export default defineServerTelemetry({
     };
   },
   async continueTraceForRequest(request, next) {
-    const kitchenSinkTrace = request.headers.get("kitchen-sink-trace");
-    if (kitchenSinkTrace) {
-      console.log(`continuing with trace header '${kitchenSinkTrace}'`);
+    const kitchenSinkTelemetryId = request.headers.get(
+      "kitchen-sink-telemetry-id",
+    );
+    if (kitchenSinkTelemetryId) {
+      console.log(`continuing with trace header '${kitchenSinkTelemetryId}'`);
     }
     return await next();
   },

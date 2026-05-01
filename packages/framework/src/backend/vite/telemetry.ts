@@ -78,6 +78,14 @@ export type ClientTracingContext = {
 };
 
 /**
+ * Context for navigation events on the client.
+ */
+export type ClientNavigationContext = {
+  path: string;
+  type: "navigate" | "back" | "refresh";
+};
+
+/**
  * All telemetry hooks are optional. If not specified, the default behaviour will apply.
  */
 type TelemetryHook<T> = T | undefined;
@@ -209,6 +217,13 @@ export interface ClientTelemetry {
    */
   onClientSideRenderError?: TelemetryHook<
     (context: ClientErrorContext) => TelemetryDefaultable<void>
+  >;
+
+  /**
+   * Called when the client-side router handles navigation and navigates to a new page, goes back or refreshes the current page.
+   */
+  onClientSideNavigationBegin?: TelemetryHook<
+    (context: ClientNavigationContext) => Promise<void>
   >;
 
   /**

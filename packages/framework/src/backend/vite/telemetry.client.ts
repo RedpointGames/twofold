@@ -5,6 +5,7 @@ import {
 } from "../runtime/helpers/errors.js";
 import {
   ClientErrorContext,
+  ClientNavigationContext,
   ClientTracingContext,
   defineClientTelemetry_requireAllHooks,
   isDefaultTelemetryBehaviour,
@@ -31,15 +32,25 @@ export const clientTelemetry = defineClientTelemetry_requireAllHooks({
     }
   },
 
+  async onClientSideNavigationBegin(context: ClientNavigationContext) {
+    if (appClientTelemetry?.onClientSideNavigationBegin) {
+      return await appClientTelemetry.onClientSideNavigationBegin(context);
+    }
+  },
+
   async getTraceHttpHeadersForServerAction(context: ClientTracingContext) {
     if (appClientTelemetry?.getTraceHttpHeadersForServerAction) {
-      return appClientTelemetry.getTraceHttpHeadersForServerAction(context);
+      return await appClientTelemetry.getTraceHttpHeadersForServerAction(
+        context,
+      );
     }
   },
 
   async getTraceHttpHeadersForRscPageLoad(context: ClientTracingContext) {
     if (appClientTelemetry?.getTraceHttpHeadersForRscPageLoad) {
-      return appClientTelemetry.getTraceHttpHeadersForRscPageLoad(context);
+      return await appClientTelemetry.getTraceHttpHeadersForRscPageLoad(
+        context,
+      );
     }
   },
 });
