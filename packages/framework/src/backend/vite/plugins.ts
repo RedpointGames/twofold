@@ -377,7 +377,11 @@ export function withTwofold(
         rsc({
           clientChunks(meta) {
             // use normalizedId to see if this sits underneath app/pages/
-            if (meta.normalizedId.startsWith("app/pages/")) {
+            if (
+              meta.normalizedId.startsWith("app/pages/") &&
+              !meta.normalizedId.endsWith(".error.tsx") &&
+              !meta.normalizedId.endsWith(".error.ts")
+            ) {
               // but hash on the unique id (absolute path)
               return `p-${xxhash64.h64ToString(meta.id)}`;
             }
