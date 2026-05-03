@@ -38,6 +38,10 @@ export type Store = {
   } | null;
   assets: string[];
   authCache: Map<string, unknown>;
+  /**
+   * We need to prevent telemetry from recursing into noAuthChecks_runPageForInstance infinitely if the error handling also fails.
+   */
+  errorHandlingDepth: number;
 };
 
 let asyncLocalStorage = new AsyncLocalStorage<Store>();

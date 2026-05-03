@@ -274,6 +274,7 @@ export class ApplicationRuntime {
         context: null,
         assets: [],
         authCache: new Map<string, unknown>(),
+        errorHandlingDepth: 0,
       };
 
       return runStore(store, () => ctx.next());
@@ -888,6 +889,32 @@ export class ApplicationRuntime {
     overridePageProps?: { error: unknown },
     overrideStatus?: number,
   ): Promise<ReplacementResponse> {
+    if (getStore().errorHandlingDepth >= 2) {
+      // We have already run through this sequence:
+      // count 0: noAuthChecks_runPageForInstance -> failed
+      //          server-side telemetry called to handle error
+      //          and it attempted to render an error page
+      //          (move to count 1)
+      // count 1: noAuthChecks_runPageForInstance for error -> failed
+      //          server-side telemetry called again to handle
+      //          error from error page, and it again attempted
+      //          to render an error page (move to count 2)
+      // count 2: now
+      //
+      // At this point it's clear we can't use telemetry to handle the
+      // error and we can't render the error either. Replace the response
+      // with a plain HTTP error so we don't loop forever.
+      return new Response(
+        "An error occurred during error handling, and it is not possible to render this page.",
+        {
+          status: 500,
+          headers: {
+            [headerContentType]: contentType.plain,
+          },
+        },
+      );
+    }
+
     // If page.segments() fails to load the module or any parent modules,
     // we want to report as an error rather than letting it propagate as
     // a catastrophic error.
@@ -895,6 +922,7 @@ export class ApplicationRuntime {
     try {
       segments = await page.segments();
     } catch (error: unknown) {
+      getStore().errorHandlingDepth++;
       return await serverTelemetry.onServerSidePageMiddlewareError({
         applicationRuntime: this,
         url: renderRequest.url,
@@ -923,6 +951,7 @@ export class ApplicationRuntime {
         ];
         await Promise.all(promises);
       } catch (error: unknown) {
+        getStore().errorHandlingDepth++;
         return await serverTelemetry.onServerSidePageMiddlewareError({
           applicationRuntime: this,
           url: renderRequest.url,
