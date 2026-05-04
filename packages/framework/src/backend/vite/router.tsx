@@ -46,6 +46,7 @@ import {
   type ActionResultData,
   MiddlewareMode,
   type ModuleSurface,
+  ModuleSurfaceExportRewrite,
 } from "./router-types.js";
 import {
   lookupClientAssetMetadata,
@@ -69,9 +70,15 @@ import { ProxyingRequest } from "../proxying-request.js";
 import { serverTelemetry } from "./telemetry.server.js";
 import { ServerErrorContextAuthExtendedInfo } from "./telemetry.js";
 import kleur from "kleur";
-import { APIProps, MetadataProps, PageProps } from "../../types/importable.js";
+import {
+  APIProps,
+  MetadataProps,
+  PageProps,
+  RewriteProps,
+} from "../../types/importable.js";
 import merge from "deepmerge";
 import { isPlainObject } from "is-plain-object";
+import { Rewrite } from "../build/rsc/rewrite.js";
 
 let { h64Raw } = await xxhash();
 
@@ -97,12 +104,14 @@ const protectedAssetPathRegex =
 export class ApplicationRuntime {
   #root: Layout;
   #apiEndpoints: API[];
+  #rewrites: Rewrite[];
   #reqId: number;
   #handler: HattipHandler<unknown>;
 
   constructor(modules: ModuleMap) {
     this.#root = ApplicationRuntime.loadRoot(modules);
     this.#apiEndpoints = this.#root.tree.findAllOfType(API);
+    this.#rewrites = this.#root.tree.findAllOfType(Rewrite);
     this.#reqId = 0;
     this.#handler = this.createHandler();
   }
@@ -326,31 +335,37 @@ export class ApplicationRuntime {
       const request = new ProxyingRequest(renderRequest.request);
       const url = new URL(request.url);
 
+      // Perform rewrites.
+      await this.runRewrites(renderRequest);
+
       // Attempt to discover a matching API request.
-      const api = this.findApi(request);
-      if (api && !renderRequest.isRsc) {
-        // We have an API request, but the URL might be overloaded with
-        // a page request, and we need to determine whether the API should
-        // actually run on this request.
-        const potentialMatchingPage = this.#root.tree.findPageForPath(
-          url.pathname,
-        );
+      if (!renderRequest.isRsc) {
+        const api = this.findApi(renderRequest);
+        if (api) {
+          // We have an API request, but the URL might be overloaded with
+          // a page request, and we need to determine whether the API should
+          // actually run on this request.
+          const potentialMatchingPage = this.#root.tree.findPageForPath(
+            url.pathname,
+          );
 
-        const pageExists = potentialMatchingPage !== undefined;
-        const accepts = parseHeaderValue(request.headers.get("accept"));
-        const acceptsHTML = isContentType.html(accepts);
-        const pageIsDynamic =
-          potentialMatchingPage?.isDynamic || potentialMatchingPage?.isCatchAll;
-        const apiIsDynamic = api.isDynamic || api.isCatchAll;
-        const apiTakesPrecedence = !apiIsDynamic && pageIsDynamic;
+          const pageExists = potentialMatchingPage !== undefined;
+          const accepts = parseHeaderValue(request.headers.get("accept"));
+          const acceptsHTML = isContentType.html(accepts);
+          const pageIsDynamic =
+            potentialMatchingPage?.isDynamic ||
+            potentialMatchingPage?.isCatchAll;
+          const apiIsDynamic = api.isDynamic || api.isCatchAll;
+          const apiTakesPrecedence = !apiIsDynamic && pageIsDynamic;
 
-        const skipApi = pageExists && acceptsHTML && !apiTakesPrecedence;
-        if (!skipApi) {
-          // There is either no page, or the page does not take precedence
-          // over the API, so run the API for this request.
-          const apiResponse = await this.runApi(renderRequest, api);
-          if (apiResponse) {
-            return apiResponse;
+          const skipApi = pageExists && acceptsHTML && !apiTakesPrecedence;
+          if (!skipApi) {
+            // There is either no page, or the page does not take precedence
+            // over the API, so run the API for this request.
+            const apiResponse = await this.runApi(renderRequest, api);
+            if (apiResponse) {
+              return apiResponse;
+            }
           }
         }
       }
@@ -589,8 +604,83 @@ export class ApplicationRuntime {
     return metadata;
   }
 
-  private findApi(request: Request): API | undefined {
-    const url = new URL(request.url);
+  private findRewrite(url: URL): Rewrite | undefined {
+    const realPath = url.pathname;
+
+    const [staticAndDynamicRewrites, catchAllRewrites] = partition(
+      this.#rewrites,
+      (api) => !api.isCatchAll,
+    );
+    const [dynamicApis, staticApis] = partition(
+      staticAndDynamicRewrites,
+      (api) => api.isDynamic,
+    );
+
+    const dynamicApisInOrder = dynamicApis.toSorted(
+      (a, b) => a.dynamicSegments.length - b.dynamicSegments.length,
+    );
+
+    const rewrite =
+      staticApis.find((rewrite) => pathMatches(rewrite.path, realPath)) ??
+      dynamicApisInOrder.find((rewrite) =>
+        pathMatches(rewrite.path, realPath),
+      ) ??
+      catchAllRewrites.find((rewrite) => pathMatches(rewrite.path, realPath));
+
+    return rewrite;
+  }
+
+  private readParamsIntoRenderRequest(
+    renderRequest: RenderRequest,
+    pattern: URLPattern,
+  ) {
+    const execPattern = pattern.exec(renderRequest.url);
+    const params = execPattern?.pathname.groups ?? {};
+    renderRequest.params = merge(renderRequest.params, params);
+  }
+
+  private async runRewrites(renderRequest: RenderRequest): Promise<void> {
+    let rewrite = this.findRewrite(renderRequest.url);
+    let rewriteCount = 0;
+    while (rewrite && rewriteCount < 20) {
+      rewriteCount++;
+
+      this.readParamsIntoRenderRequest(renderRequest, rewrite.pattern);
+      const props: RewriteProps = {
+        params: renderRequest.params,
+        searchParams: renderRequest.url.searchParams,
+        url: renderRequest.url,
+        request: renderRequest.request,
+        rewrittenTo: {
+          searchParams: renderRequest.url.searchParams,
+          url: renderRequest.url,
+        },
+        original: {
+          searchParams: renderRequest.originalUrl.searchParams,
+          url: renderRequest.originalUrl,
+        },
+      };
+
+      const newPath = await rewrite.rewrite(props);
+      if (newPath === undefined) {
+        // rewrite declined
+        break;
+      }
+
+      console.log(
+        `${kleur["cyan"](`[Rewrite]`)} %s -> %s`,
+        renderRequest.url,
+        new URL(newPath, renderRequest.url),
+      );
+      renderRequest.url = new URL(newPath, renderRequest.url);
+
+      // get next rewrite
+      rewrite = this.findRewrite(renderRequest.url);
+    }
+  }
+
+  private findApi(renderRequest: RenderRequest): API | undefined {
+    const url = renderRequest.url;
     const realPath = url.pathname;
 
     const [staticAndDynamicApis, catchAllApis] = partition(
@@ -619,22 +709,21 @@ export class ApplicationRuntime {
     api: API,
   ): Promise<Response | undefined> {
     const module = await api.loadModule();
-    const execPattern = api.pattern.exec(renderRequest.url);
-    const params = execPattern?.pathname.groups ?? {};
+    this.readParamsIntoRenderRequest(renderRequest, api.pattern);
 
     const authResponse = await evaluatePolicyArrayToResponse<Response>(
       api,
       {
         type: "api",
         request: renderRequest.request,
-        routeParams: params,
+        routeParams: renderRequest.params,
         authCache: getStore().authCache,
       },
       async (error) => {
         const authFailedResponse =
           await serverTelemetry.onServerSideApiAuthUnknownError({
             applicationRuntime: this,
-            url: renderRequest.url,
+            url: renderRequest.originalUrl,
             renderRequest: renderRequest,
             error,
             willRecover: false,
@@ -655,11 +744,19 @@ export class ApplicationRuntime {
     }
 
     const props: APIProps<never, object> = {
-      params,
-      searchParams: renderRequest.url.searchParams,
-      url: renderRequest.url,
+      params: renderRequest.params,
+      searchParams: renderRequest.originalUrl.searchParams,
+      url: renderRequest.originalUrl,
       request: renderRequest.request,
       metadata: {},
+      rewrittenTo: {
+        searchParams: renderRequest.url.searchParams,
+        url: renderRequest.url,
+      },
+      original: {
+        searchParams: renderRequest.originalUrl.searchParams,
+        url: renderRequest.originalUrl,
+      },
     };
     props.metadata = await this.getMetadata(api, props);
 
@@ -677,7 +774,7 @@ export class ApplicationRuntime {
     } catch (error: unknown) {
       return await serverTelemetry.onServerSideApiError({
         applicationRuntime: this,
-        url: renderRequest.url,
+        url: renderRequest.originalUrl,
         renderRequest: renderRequest,
         error: error,
         willRecover: false,
@@ -698,7 +795,7 @@ export class ApplicationRuntime {
       } catch (error: unknown) {
         response = await serverTelemetry.onServerSideApiError({
           applicationRuntime: this,
-          url: renderRequest.url,
+          url: renderRequest.originalUrl,
           renderRequest: renderRequest,
           error,
           willRecover: false,
@@ -880,22 +977,21 @@ export class ApplicationRuntime {
       );
     }
 
-    const execPattern = page.pattern.exec(renderRequest.url);
-    const routeParams = execPattern?.pathname.groups ?? {};
+    this.readParamsIntoRenderRequest(renderRequest, page.pattern);
     const authResponse =
       await evaluatePolicyArrayToResponse<ReplacementResponse>(
         page,
         {
           type: "page",
           request: renderRequest.request,
-          routeParams: routeParams,
+          routeParams: renderRequest.params,
           authCache: getStore().authCache,
         },
         async (error) => {
           const authFailedResponse =
             await serverTelemetry.onServerSidePageAuthUnknownError({
               applicationRuntime: this,
-              url: renderRequest.url,
+              url: renderRequest.originalUrl,
               renderRequest: renderRequest,
               error,
               willRecover: false,
@@ -971,7 +1067,7 @@ export class ApplicationRuntime {
       getStore().errorHandlingDepth++;
       return await serverTelemetry.onServerSidePageMiddlewareError({
         applicationRuntime: this,
-        url: renderRequest.url,
+        url: renderRequest.originalUrl,
         renderRequest: renderRequest,
         error: error,
         willRecover: false,
@@ -979,14 +1075,20 @@ export class ApplicationRuntime {
       });
     }
 
-    const execPattern = page.pattern.exec(renderRequest.url);
-    const routeParams = execPattern?.pathname.groups ?? {};
     const props: PageProps<never, object> = {
-      params: routeParams,
-      searchParams: renderRequest.url.searchParams,
-      url: renderRequest.url,
+      params: renderRequest.params,
+      searchParams: renderRequest.originalUrl.searchParams,
+      url: renderRequest.originalUrl,
       request: renderRequest.request,
       metadata: {},
+      rewrittenTo: {
+        searchParams: renderRequest.url.searchParams,
+        url: renderRequest.url,
+      },
+      original: {
+        searchParams: renderRequest.originalUrl.searchParams,
+        url: renderRequest.originalUrl,
+      },
     };
     props.metadata = await this.getMetadata(page, props);
 
@@ -1002,7 +1104,7 @@ export class ApplicationRuntime {
         getStore().errorHandlingDepth++;
         return await serverTelemetry.onServerSidePageMiddlewareError({
           applicationRuntime: this,
-          url: renderRequest.url,
+          url: renderRequest.originalUrl,
           renderRequest: renderRequest,
           error: error,
           willRecover: false,
@@ -1014,7 +1116,7 @@ export class ApplicationRuntime {
     const routeStack = segments.map((segment): RouteStackEntry => {
       const segmentKey = `${segment.path}:${applyPathParams(
         segment.path,
-        routeParams,
+        renderRequest.params,
       )}`;
 
       // we hash the key because if they "look" like urls or paths
@@ -1070,7 +1172,7 @@ export class ApplicationRuntime {
         // Otherwise forward error to error handling.
         return serverTelemetry.onServerSidePageRenderError({
           applicationRuntime: this,
-          url: renderRequest.url,
+          url: renderRequest.originalUrl,
           renderRequest: renderRequest,
           error: error,
           willRecover: true,
@@ -1120,9 +1222,9 @@ export class ApplicationRuntime {
     targetUrl: string,
     status?: number,
   ): Response {
-    const redirectUrl = new URL(targetUrl, renderRequest.url);
+    const redirectUrl = new URL(targetUrl, renderRequest.originalUrl);
     const isRelative =
-      redirectUrl.origin === renderRequest.url.origin &&
+      redirectUrl.origin === renderRequest.originalUrl.origin &&
       targetUrl.startsWith("/");
 
     if (renderRequest.isRsc && isRelative) {
@@ -1162,6 +1264,7 @@ export class ApplicationRuntime {
     let pages = ApplicationRuntime.loadPages(modules);
     let layouts = ApplicationRuntime.loadLayouts(modules);
     let apiEndpoints = ApplicationRuntime.loadApiEndpoints(modules);
+    let rewrites = ApplicationRuntime.loadRewrites(modules);
     let errorTemplates = ApplicationRuntime.loadErrorTemplates(modules);
     let catchBoundaries =
       ApplicationRuntime.loadCatchBoundaries(errorTemplates);
@@ -1179,6 +1282,7 @@ export class ApplicationRuntime {
     catchBoundaries.forEach((catchBoundary) => root.addChild(catchBoundary));
     pages.forEach((page) => root.addChild(page));
     apiEndpoints.forEach((apiEndpoint) => root.addChild(apiEndpoint));
+    rewrites.forEach((rewrite) => root.addChild(rewrite));
     errorTemplates.forEach((errorTemplate) => root.addChild(errorTemplate));
     specialPages.forEach((page) => root.addChild(page));
 
@@ -1218,7 +1322,29 @@ export class ApplicationRuntime {
         }
         return new API({
           path: `/${path}`,
-          loadModule: modules[relativePath]!,
+          loadModule: modules[relativePath]! as () => Promise<ModuleSurface>,
+        });
+      });
+  }
+
+  private static loadRewrites(modules: ModuleMap): Rewrite[] {
+    return Object.getOwnPropertyNames(modules)
+      .filter((relativePath) =>
+        ApplicationRuntime.hasSuffix(relativePath, ".rewrite"),
+      )
+      .map((relativePath) => {
+        let path = ApplicationRuntime.snipSuffix(
+          relativePath.slice(2),
+          ".rewrite",
+        );
+        if (path === "index" || path.endsWith("/index")) {
+          path = path.slice(0, -6);
+        }
+        return new Rewrite({
+          path: `/${path}`,
+          loadModule: modules[relativePath]! as () => Promise<
+            ModuleSurface<ModuleSurfaceExportRewrite>
+          >,
         });
       });
   }
@@ -1239,7 +1365,7 @@ export class ApplicationRuntime {
         return new Page({
           path: `/${path}`,
           css: undefined,
-          loadModule: modules[relativePath]!,
+          loadModule: modules[relativePath]! as () => Promise<ModuleSurface>,
         });
       });
   }
@@ -1257,7 +1383,7 @@ export class ApplicationRuntime {
         return new Layout({
           path: `/${path}`,
           css: undefined,
-          loadModule: modules[relativePath]!,
+          loadModule: modules[relativePath]! as () => Promise<ModuleSurface>,
         });
       });
   }
@@ -1273,7 +1399,7 @@ export class ApplicationRuntime {
         return new ErrorTemplate({
           tag,
           path,
-          loadModule: modules[relativePath]!,
+          loadModule: modules[relativePath]! as () => Promise<ModuleSurface>,
         });
       });
 
@@ -1284,7 +1410,7 @@ export class ApplicationRuntime {
           tag: "unauthorized",
           path: "/",
           loadModule: () =>
-            import("../../client/components/error-templates/unauthorized.js"),
+            import("../../client/components/error-templates/unauthorized.js") as unknown as Promise<ModuleSurface>,
         }),
       );
     }
@@ -1296,7 +1422,7 @@ export class ApplicationRuntime {
           tag: "not-found",
           path: "/",
           loadModule: () =>
-            import("../../client/components/error-templates/not-found.js"),
+            import("../../client/components/error-templates/not-found.js") as unknown as Promise<ModuleSurface>,
         }),
       );
     }

@@ -8,9 +8,17 @@ export type MetadataProps<
   TV = string | undefined,
 > = {
   params: Record<T, TV>;
+  request: Request;
   searchParams: URLSearchParams;
   url: URL;
-  request: Request;
+  rewrittenTo: {
+    searchParams: URLSearchParams;
+    url: URL;
+  };
+  original: {
+    searchParams: URLSearchParams;
+    url: URL;
+  };
 };
 
 export type PageProps<
@@ -38,6 +46,16 @@ export type APIProps<
   M extends object | never = never,
 > = MetadataProps<T, string> & {
   metadata: M;
+};
+
+export type RewriteProps<T extends string | never = never> = MetadataProps<
+  T,
+  string
+> & {
+  params: Record<T, string>;
+  searchParams: URLSearchParams;
+  url: URL;
+  request: Request;
 };
 
 export type Config = {

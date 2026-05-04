@@ -4,6 +4,7 @@ import type {
   LayoutProps,
   MetadataProps,
   PageProps,
+  RewriteProps,
 } from "../../types/importable";
 import type { RscActionPayload } from "./entrypoint/payload";
 import type { AuthPolicyArray } from "../auth/auth";
@@ -13,13 +14,19 @@ export enum MiddlewareMode {
   Skip,
 }
 
-export interface ModuleSurface {
-  default?: FunctionComponent<
-    | LayoutProps
-    | PageProps<any>
-    | { error: unknown }
-    | { unauthorizedMessage: string | undefined }
-  >;
+export type ModuleSurfaceExportReact = FunctionComponent<
+  | LayoutProps
+  | PageProps<any>
+  | { error: unknown }
+  | { unauthorizedMessage: string | undefined }
+>;
+
+export type ModuleSurfaceExportRewrite = (
+  props: RewriteProps<any>,
+) => Promise<string | undefined>;
+
+export type ModuleSurface<T = ModuleSurfaceExportReact> = T & {
+  default?: T;
   auth?: AuthPolicyArray;
   before?: (props: any) => Promise<void>;
   GET?: (req: Request) => Promise<Response>;
@@ -28,10 +35,13 @@ export interface ModuleSurface {
   metadata?:
     | object
     | ((props: MetadataProps<string, string | undefined>) => Promise<object>);
-}
+};
 
 export type ModuleMap = {
-  [path: string]: () => Promise<ModuleSurface>;
+  [path: string]: () => Promise<
+    | ModuleSurface<ModuleSurfaceExportReact>
+    | ModuleSurface<ModuleSurfaceExportRewrite>
+  >;
 };
 
 export class ActionResultData {

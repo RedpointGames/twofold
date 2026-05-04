@@ -4,7 +4,7 @@ import { Page } from "../../../src/backend/build/rsc/page.ts";
 import { pathPartialMatches } from "../../../src/backend/runtime/helpers/routing.ts";
 
 const loadModule = async () => {
-  return {};
+  return {} as any;
 };
 
 function createLayout(path: string) {

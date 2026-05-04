@@ -21,12 +21,16 @@ export type RenderRequest =
       actionType: RenderRequestActionType;
       request: Request;
       url: URL;
+      originalUrl: URL;
+      params: Record<string, string | undefined>;
     }
   | {
       isRsc: boolean;
       isAction: false;
       request: Request;
       url: URL;
+      originalUrl: URL;
+      params: Record<string, string | undefined>;
     };
 
 type ReactFormStateInternal = [
@@ -61,6 +65,8 @@ export async function parseRenderRequest(
           actionType: RenderRequestActionType.FormState,
           request: request,
           url: url,
+          originalUrl: url,
+          params: {},
         };
       }
     }
@@ -77,6 +83,8 @@ export async function parseRenderRequest(
         isAction: false,
         request: new Request(requestUrl, request),
         url: requestUrl,
+        originalUrl: requestUrl,
+        params: {},
       };
     } else if (isRscAction) {
       const actionId =
@@ -88,6 +96,8 @@ export async function parseRenderRequest(
         actionType: RenderRequestActionType.Request,
         request: new Request(requestUrl, request),
         url: requestUrl,
+        originalUrl: requestUrl,
+        params: {},
       };
     }
   }
@@ -97,5 +107,7 @@ export async function parseRenderRequest(
     isAction: false,
     request,
     url,
+    originalUrl: url,
+    params: {},
   };
 }

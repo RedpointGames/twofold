@@ -374,6 +374,11 @@ export default function Nav() {
                         description="Handle redirects from pages and actions."
                         href="/routing/redirects"
                       />
+                      <ExampleLink
+                        title="Rewrites"
+                        description="Handle rewrites for URLs."
+                        href="/routing/rewrites/another"
+                      />
                     </ExampleGroup>
 
                     <ExampleGroup name="Errors" path="/error-handling">

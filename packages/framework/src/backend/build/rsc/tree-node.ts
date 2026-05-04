@@ -8,8 +8,15 @@ import { CatchBoundary } from "./catch-boundary.js";
 import { ErrorTemplate } from "./error-template.js";
 import { Layout } from "./layout.js";
 import { Page } from "./page.js";
+import { Rewrite } from "./rewrite.js";
 
-export type Node = Layout | CatchBoundary | Page | ErrorTemplate | API;
+export type Node =
+  | Layout
+  | CatchBoundary
+  | Page
+  | ErrorTemplate
+  | API
+  | Rewrite;
 
 export type Treeable = {
   path: string;

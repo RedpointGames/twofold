@@ -9,6 +9,13 @@ import xxhash from "xxhash-wasm";
 
 const xxhash64 = await xxhash();
 
+const fileExtensions = ["ts", "tsx"];
+const wildcardSuffixes = [".api", ".error", ".page", ".rewrite"];
+const importGlob = [
+  ...wildcardSuffixes.map((suffix) => `*${suffix}`),
+  "layout",
+].flatMap((glob) => fileExtensions.map((ext) => `${glob}.${ext}`));
+
 function createVirtualPlugin(
   name: string,
   impl: {
@@ -62,7 +69,7 @@ function twofoldServerApplicationRouter(): Plugin {
 import { ApplicationRuntime } from '@twofold/framework/internal/router';
 export default new ApplicationRuntime(
   import.meta.glob(
-    "./**/{*.error.tsx,*.page.tsx,layout.tsx,*.api.ts,*.api.tsx}",
+    "./**/{${importGlob.join(",")}}",
     { base: "./app/pages" }
   ));
 `;
@@ -154,8 +161,7 @@ function normalizeRelativePathToRoute(appPath: string) {
   if (appPath.endsWith("/layout")) {
     appPath = appPath.slice(0, -"/layout".length);
   }
-  const knownSuffixes = [".page", ".api", ".error"];
-  for (const suffix of knownSuffixes) {
+  for (const suffix of wildcardSuffixes) {
     if (appPath.endsWith(suffix)) {
       appPath = appPath.slice(0, -suffix.length);
     }

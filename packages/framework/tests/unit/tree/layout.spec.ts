@@ -2,7 +2,7 @@ import { Layout } from "../../../src/backend/build/rsc/layout.ts";
 import { expect, test } from "vitest";
 
 const loadModule = async () => {
-  return {};
+  return {} as any;
 };
 
 function createLayout(path: string) {

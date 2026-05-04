@@ -6,7 +6,7 @@ import { Page } from "../../../src/backend/build/rsc/page.ts";
 import { expect, test } from "vitest";
 
 const loadModule = async () => {
-  return {};
+  return {} as any;
 };
 const routeStackPlaceholder = new Generic({ loadModule });
 
