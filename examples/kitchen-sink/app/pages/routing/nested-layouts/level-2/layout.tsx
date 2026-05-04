@@ -1,4 +1,13 @@
+import { Metadata } from "@/app/pages/metadata";
+import { MetadataProps } from "@twofold/framework/types";
 import { ReactNode } from "react";
+
+export async function metadata(props: MetadataProps): Promise<Metadata> {
+  return {
+    additionalBodyClassNames:
+      props.searchParams.get("__white") !== null ? ["text-white"] : [],
+  };
+}
 
 export default function NestedLayoutLevel2({
   children,

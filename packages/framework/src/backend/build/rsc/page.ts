@@ -4,6 +4,7 @@ import { type Treeable, TreeNode } from "./tree-node.js";
 import { CatchBoundary } from "./catch-boundary.js";
 import { type ModuleSurface } from "../../vite/router-types.js";
 import { AuthPolicyArray } from "../../auth/auth.js";
+import { MetadataProps } from "../../../types/importable.js";
 
 export class Page implements Treeable {
   #path: string;
@@ -178,5 +179,19 @@ export class Page implements Treeable {
     } else {
       return [];
     }
+  }
+
+  async getMetadata(
+    props: MetadataProps<string, string | undefined>,
+  ): Promise<object> {
+    let module = await this.loadModule();
+    if (module.metadata) {
+      if (typeof module.metadata === "function") {
+        return (await module.metadata(props)) ?? {};
+      } else if (typeof module.metadata === "object") {
+        return module.metadata;
+      }
+    }
+    return {};
   }
 }

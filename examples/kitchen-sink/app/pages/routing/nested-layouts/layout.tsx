@@ -1,6 +1,15 @@
 import { ReactNode } from "react";
 import Counter from "./counter";
 import RunAction from "./run-action";
+import { Metadata } from "../../metadata";
+import { MetadataProps } from "@twofold/framework/types";
+
+export async function metadata(props: MetadataProps): Promise<Metadata> {
+  return {
+    additionalBodyClassNames:
+      props.searchParams.get("__red") !== null ? ["bg-red-500"] : [],
+  };
+}
 
 async function serverAction() {
   "use server";

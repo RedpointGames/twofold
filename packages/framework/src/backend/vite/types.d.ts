@@ -39,3 +39,6 @@ declare module "virtual:twofold/telemetry-client" {
   const default_: ClientTelemetry | undefined;
   export default default_;
 }
+declare module "is-plain-object" {
+  export function isPlainObject(o: any): boolean;
+}

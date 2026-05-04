@@ -1,3 +1,4 @@
+import { MetadataProps } from "../../../types/importable.js";
 import { AuthPolicyArray } from "../../auth/auth.js";
 import { type ModuleSurface } from "../../vite/router-types.js";
 import { Layout } from "./layout.js";
@@ -95,5 +96,19 @@ export class API implements Treeable {
     } else {
       return [];
     }
+  }
+
+  async getMetadata(
+    props: MetadataProps<string, string | undefined>,
+  ): Promise<object> {
+    let module = await this.loadModule();
+    if (module.metadata) {
+      if (typeof module.metadata === "function") {
+        return (await module.metadata(props)) ?? {};
+      } else if (typeof module.metadata === "object") {
+        return module.metadata;
+      }
+    }
+    return {};
   }
 }

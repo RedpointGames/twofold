@@ -1,8 +1,12 @@
 import type { FunctionComponent } from "react";
 import type { ReactFormState } from "react-dom/client";
-import type { LayoutProps, PageProps } from "../../types/importable";
+import type {
+  LayoutProps,
+  MetadataProps,
+  PageProps,
+} from "../../types/importable";
 import type { RscActionPayload } from "./entrypoint/payload";
-import { AuthPolicyArray } from "../auth/auth";
+import type { AuthPolicyArray } from "../auth/auth";
 
 export enum MiddlewareMode {
   Run,
@@ -21,6 +25,9 @@ export interface ModuleSurface {
   GET?: (req: Request) => Promise<Response>;
   POST?: (req: Request) => Promise<Response>;
   [key: string | symbol]: any | undefined;
+  metadata?:
+    | object
+    | ((props: MetadataProps<string, string | undefined>) => Promise<object>);
 }
 
 export type ModuleMap = {

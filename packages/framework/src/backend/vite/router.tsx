@@ -69,6 +69,9 @@ import { ProxyingRequest } from "../proxying-request.js";
 import { serverTelemetry } from "./telemetry.server.js";
 import { ServerErrorContextAuthExtendedInfo } from "./telemetry.js";
 import kleur from "kleur";
+import { APIProps, MetadataProps, PageProps } from "../../types/importable.js";
+import merge from "deepmerge";
+import { isPlainObject } from "is-plain-object";
 
 let { h64Raw } = await xxhash();
 
@@ -547,6 +550,45 @@ export class ApplicationRuntime {
     return undefined;
   }
 
+  private async getMetadata(
+    node: {
+      getMetadata: (
+        props: MetadataProps<string, string | undefined>,
+      ) => Promise<object>;
+      layouts: Layout[];
+    },
+    props: MetadataProps<string, string | undefined>,
+  ) {
+    const metadatas = await Promise.all([
+      ...node.layouts.map((layout) => layout.getMetadata(props)),
+      node.getMetadata(props),
+    ]);
+    let metadata = {};
+    for (let i = metadatas.length - 1; i >= 0; i--) {
+      metadata = merge(metadata, metadatas[i] ?? {}, {
+        arrayMerge(target, source, _options) {
+          if (
+            source.length >= 1 &&
+            typeof source[0] === "object" &&
+            "__arrayMergeMode" in source[0] &&
+            typeof source[0].__arrayMergeMode === "string" &&
+            source[0].__arrayMergeMode === "replace"
+          ) {
+            // allow complete replacement by having the first element in the array be { __arrayMergeMode: "replace" }
+            return source.slice(1);
+          } else {
+            // source first, because source will be higher-level layouts
+            return [...source, ...target];
+          }
+        },
+        isMergeableObject(value) {
+          return isPlainObject(value) || value instanceof Array;
+        },
+      });
+    }
+    return metadata;
+  }
+
   private findApi(request: Request): API | undefined {
     const url = new URL(request.url);
     const realPath = url.pathname;
@@ -578,19 +620,14 @@ export class ApplicationRuntime {
   ): Promise<Response | undefined> {
     const module = await api.loadModule();
     const execPattern = api.pattern.exec(renderRequest.url);
-    const props = {
-      params: execPattern?.pathname.groups ?? {},
-      searchParams: renderRequest.url.searchParams,
-      url: renderRequest.url,
-      request: renderRequest.request,
-    };
+    const params = execPattern?.pathname.groups ?? {};
 
     const authResponse = await evaluatePolicyArrayToResponse<Response>(
       api,
       {
         type: "api",
         request: renderRequest.request,
-        routeParams: props.params,
+        routeParams: params,
         authCache: getStore().authCache,
       },
       async (error) => {
@@ -616,6 +653,15 @@ export class ApplicationRuntime {
     if (authResponse) {
       return authResponse;
     }
+
+    const props: APIProps<never, object> = {
+      params,
+      searchParams: renderRequest.url.searchParams,
+      url: renderRequest.url,
+      request: renderRequest.request,
+      metadata: {},
+    };
+    props.metadata = await this.getMetadata(api, props);
 
     try {
       const layouts = api.layouts;
@@ -935,12 +981,14 @@ export class ApplicationRuntime {
 
     const execPattern = page.pattern.exec(renderRequest.url);
     const routeParams = execPattern?.pathname.groups ?? {};
-    const props = {
+    const props: PageProps<never, object> = {
       params: routeParams,
       searchParams: renderRequest.url.searchParams,
       url: renderRequest.url,
       request: renderRequest.request,
+      metadata: {},
     };
+    props.metadata = await this.getMetadata(page, props);
 
     if (middleware === MiddlewareMode.Run) {
       try {
