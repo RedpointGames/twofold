@@ -146,7 +146,7 @@ export class Layout implements Treeable {
         props: {},
       };
       return [...wrappers, layout, routeStackPlaceholder];
-    } else if (module.auth) {
+    } else if (module.auth || module.metadata) {
       return [...wrappers, routeStackPlaceholder];
     } else {
       throw new Error(`Layout for ${this.path}/ has no default export.`);
