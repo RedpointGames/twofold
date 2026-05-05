@@ -579,8 +579,8 @@ export class ApplicationRuntime {
       node.getMetadata(props),
     ]);
     let metadata = {};
-    for (let i = metadatas.length - 1; i >= 0; i--) {
-      metadata = merge(metadata, metadatas[i] ?? {}, {
+    for (const incomingMetadata of metadatas) {
+      metadata = merge(metadata, incomingMetadata ?? {}, {
         arrayMerge(target, source, _options) {
           if (
             source.length >= 1 &&
