@@ -12,6 +12,7 @@ import {
 } from "../../auth/auth.js";
 import globalAuth from "virtual:twofold/server-global-auth";
 import { ReplacementResponse } from "../../vite/replacement-response.js";
+import kleur from "kleur";
 
 export async function evaluatePolicyArray(
   node: Node,
@@ -83,6 +84,33 @@ export async function evaluatePolicyArray(
     if (authPolicyResult.__allow) {
       continue;
     } else {
+      let location;
+      switch (props.type) {
+        case "api":
+          location = " [API Route]";
+          break;
+        case "page":
+          location = " [Page]";
+          break;
+        case "action":
+          location = " [Action]";
+          break;
+        case "client-asset":
+          location = " [Client Asset]";
+          break;
+        default:
+          location = "";
+          break;
+      }
+      if (location !== "") {
+        location = kleur["yellow"](location);
+      }
+      console.log(
+        `${kleur["red"](`[Access Denied]`)}%s %s (denied by policy '%s')`,
+        location,
+        props.request.url,
+        authPolicy.name,
+      );
       return authPolicyResult;
     }
   }
