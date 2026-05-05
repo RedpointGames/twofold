@@ -344,6 +344,9 @@ export function withTwofold(
           },
         ],
       },
+      optimizeDeps: {
+        exclude: ["@redpointgames/framework"],
+      },
       assetsInclude: ["**/*.html"],
       environments: {
         client: {
