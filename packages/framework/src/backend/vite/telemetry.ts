@@ -4,6 +4,7 @@ import type { Page } from "../build/rsc/page";
 import type { ReplacementResponse } from "./replacement-response";
 import type { ApplicationRuntime } from "./router";
 import type { ErrorInfo } from "react";
+import type { AuthPolicyProps } from "../auth/auth";
 
 export interface ServerErrorContextAuthExtendedInfo {
   relatedId: string;
@@ -43,6 +44,14 @@ export interface ServerTracingContext {
 }
 
 /**
+ * Context when access is denied to a resource by authentication policies.
+ */
+export interface ServerAccessDeniedContext {
+  props: AuthPolicyProps;
+  failingPolicyFunctionName: string;
+}
+
+/**
  * Context provided when errors are caught on the client.
  */
 export type ClientErrorContext = {
@@ -76,6 +85,23 @@ export type ClientTracingContext = {
   actionId?: string;
   actionBody?: BodyInit;
 };
+
+/**
+ * Context for unexpected RSC response events on the client.
+ */
+export type ClientRscResponseContext =
+  | {
+      type: "action";
+      id: string;
+      args: any;
+      request: Request;
+      response: Response;
+    }
+  | {
+      type: "page";
+      request: Request;
+      response: Response;
+    };
 
 /**
  * Context for navigation events on the client.
@@ -163,6 +189,15 @@ export interface ServerTelemetry {
   >;
 
   /**
+   * Called when authentication policies deny access to any resource for any reason (not just unexpected errors).
+   *
+   * Other telemetry hooks such as onServerSidePageAuthUnknownError, onServerSideApiAuthUnknownError and onServerSideDeniedAccessToClientAsset, will run in addition to this telemetry hook. This telemetry hook runs first.
+   */
+  onServerSideAccessDenied?: TelemetryHook<
+    (context: ServerAccessDeniedContext) => Promise<TelemetryDefaultable<void>>
+  >;
+
+  /**
    * Called when authentication policies run for a page and throw an unknown type of error. In this case access is denied and the result of this function is the response.
    *
    * If you do not return a replacement response here, the default behaviour will always run and replace the response. It is not possible to use this hook to continue execution when access is denied.
@@ -224,6 +259,13 @@ export interface ClientTelemetry {
    */
   onClientSideNavigationBegin?: TelemetryHook<
     (context: ClientNavigationContext) => Promise<void>
+  >;
+
+  /**
+   * Called when the client-side code attempts to invoke a server action or fetch a page via RSC, and the response is unexpected (due to the backend server being down, firewall denying access, etc). The page or action will still fail and likely trigger other error paths, but this hook allows you to inspect the actual response content.
+   */
+  onClientSideUnexpectedRscResponse?: TelemetryHook<
+    (context: ClientRscResponseContext) => Promise<void>
   >;
 
   /**

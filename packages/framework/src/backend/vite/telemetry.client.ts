@@ -38,6 +38,14 @@ export const clientTelemetry = defineClientTelemetry_requireAllHooks({
     }
   },
 
+  async onClientSideUnexpectedRscResponse(context) {
+    if (appClientTelemetry?.onClientSideUnexpectedRscResponse) {
+      return await appClientTelemetry.onClientSideUnexpectedRscResponse(
+        context,
+      );
+    }
+  },
+
   async getTraceHttpHeadersForServerAction(context: ClientTracingContext) {
     if (appClientTelemetry?.getTraceHttpHeadersForServerAction) {
       return await appClientTelemetry.getTraceHttpHeadersForServerAction(

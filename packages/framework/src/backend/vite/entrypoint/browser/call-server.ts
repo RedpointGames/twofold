@@ -9,6 +9,7 @@ import { headerContentType, isContentType } from "../../content-types.js";
 import { parseHeaderValue } from "@hattip/headers";
 import { createRscActionRequest } from "../request.client.js";
 import { getPathForRouterFromRscUrl } from "../request.js";
+import { clientTelemetry } from "../../telemetry.client.js";
 
 function getOriginalPathFromRscUrlForCatastrophicError(url: URL) {
   if (url.pathname.startsWith("/__rsc/")) {
@@ -32,6 +33,11 @@ export async function fetchPageAsRscPayload(
     // can't provide an RSC stream. We need to synthesize an error
     // response so that the router will correctly add the attempted
     // URL to the history.
+    await clientTelemetry.onClientSideUnexpectedRscResponse({
+      type: "page",
+      request: renderRequest,
+      response: response,
+    });
     return {
       stack: [
         {
@@ -101,6 +107,13 @@ export async function callServerAction(id: string, args: any) {
       window.location.href = json.url;
     }
   } else if (!response.ok) {
+    await clientTelemetry.onClientSideUnexpectedRscResponse({
+      type: "action",
+      id: id,
+      args: args,
+      request: renderRequest,
+      response: response,
+    });
     let error = new Error(response.statusText);
     let stream = new ReadableStream({
       start(controller) {

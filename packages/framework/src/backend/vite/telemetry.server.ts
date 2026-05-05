@@ -224,6 +224,44 @@ export const serverTelemetry = defineServerTelemetry_requireAllHooks({
     }
   },
 
+  async onServerSideAccessDenied(context) {
+    if (appServerTelemetry?.onServerSideAccessDenied) {
+      let appResult =
+        await appServerTelemetry.onServerSideAccessDenied(context);
+      if (!isDefaultTelemetryBehaviour(appResult)) {
+        return appResult;
+      }
+    }
+
+    let location;
+    switch (context.props.type) {
+      case "api":
+        location = " [API Route]";
+        break;
+      case "page":
+        location = " [Page]";
+        break;
+      case "action":
+        location = " [Action]";
+        break;
+      case "client-asset":
+        location = " [Client Asset]";
+        break;
+      default:
+        location = "";
+        break;
+    }
+    if (location !== "") {
+      location = kleur["yellow"](location);
+    }
+    console.log(
+      `${kleur["red"](`[Access Denied]`)}%s %s (denied by policy '%s')`,
+      location,
+      context.props.request.url,
+      context.failingPolicyFunctionName,
+    );
+  },
+
   async onServerSidePageAuthUnknownError(context: ServerErrorContext) {
     if (appServerTelemetry?.onServerSidePageAuthUnknownError) {
       let appResult =
