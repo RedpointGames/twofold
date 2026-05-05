@@ -1,5 +1,6 @@
 import { RewriteProps } from "../../../types/importable.js";
 import { AuthPolicyArray } from "../../auth/auth.js";
+import { getPathPatternFromPath } from "../../utils/pattern.js";
 import type {
   ModuleSurfaceExportRewrite,
   ModuleSurface,
@@ -63,10 +64,7 @@ export class Rewrite implements Treeable {
   }
 
   get pattern() {
-    let pathname = this.#path
-      .replace(/\/\(.*\)\//g, "/")
-      .replace(/\/\$\$(\w+)/g, "/:$1(.*)")
-      .replace(/\/\$/g, "/:");
+    let pathname = getPathPatternFromPath(this.#path);
 
     return new URLPattern({
       protocol: "http{s}?",

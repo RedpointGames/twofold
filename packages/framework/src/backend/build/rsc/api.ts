@@ -1,5 +1,6 @@
 import { MetadataProps } from "../../../types/importable.js";
 import { AuthPolicyArray } from "../../auth/auth.js";
+import { getPathPatternFromPath } from "../../utils/pattern.js";
 import { type ModuleSurface } from "../../vite/router-types.js";
 import { Layout } from "./layout.js";
 import { Treeable, TreeNode } from "./tree-node.js";
@@ -60,10 +61,7 @@ export class API implements Treeable {
   }
 
   get pattern() {
-    let pathname = this.#path
-      .replace(/\/\(.*\)\//g, "/")
-      .replace(/\/\$\$(\w+)/g, "/:$1(.*)")
-      .replace(/\/\$/g, "/:");
+    let pathname = getPathPatternFromPath(this.#path);
 
     return new URLPattern({
       protocol: "http{s}?",
