@@ -377,6 +377,8 @@ export class ApplicationRuntime {
           request,
           renderRequest.actionId,
           renderRequest.actionType,
+          renderRequest.url,
+          renderRequest.originalUrl,
         );
       }
 
@@ -718,6 +720,14 @@ export class ApplicationRuntime {
         request: renderRequest.request,
         routeParams: renderRequest.params,
         authCache: getStore().authCache,
+        rewrittenTo: {
+          searchParams: renderRequest.url.searchParams,
+          url: renderRequest.url,
+        },
+        original: {
+          searchParams: renderRequest.originalUrl.searchParams,
+          url: renderRequest.originalUrl,
+        },
       },
       async (error) => {
         const authFailedResponse =
@@ -813,6 +823,8 @@ export class ApplicationRuntime {
     request: Request,
     actionId: string,
     actionType: RenderRequestActionType,
+    url: URL,
+    originalUrl: URL,
   ): Promise<ActionResultData> {
     const unauthorizedAction = (error?: Error): ActionResultData => {
       const errorToReturn = error ?? new UnauthorizedError();
@@ -869,6 +881,14 @@ export class ApplicationRuntime {
         type: "action",
         request: request,
         authCache: getStore().authCache,
+        rewrittenTo: {
+          searchParams: url.searchParams,
+          url: url,
+        },
+        original: {
+          searchParams: originalUrl.searchParams,
+          url: originalUrl,
+        },
       },
       serverActionAuth,
     );
@@ -986,6 +1006,14 @@ export class ApplicationRuntime {
           request: renderRequest.request,
           routeParams: renderRequest.params,
           authCache: getStore().authCache,
+          rewrittenTo: {
+            searchParams: renderRequest.url.searchParams,
+            url: renderRequest.url,
+          },
+          original: {
+            searchParams: renderRequest.originalUrl.searchParams,
+            url: renderRequest.originalUrl,
+          },
         },
         async (error) => {
           const authFailedResponse =

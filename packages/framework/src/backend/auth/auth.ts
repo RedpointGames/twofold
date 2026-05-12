@@ -7,17 +7,41 @@ export type AuthPolicyProps =
       request: Request;
       routeParams: Record<string, string | undefined>;
       authCache: Map<string, unknown>;
+      rewrittenTo: {
+        searchParams: URLSearchParams;
+        url: URL;
+      };
+      original: {
+        searchParams: URLSearchParams;
+        url: URL;
+      };
     }
   | {
       type: "action";
       request: Request;
       authCache: Map<string, unknown>;
+      rewrittenTo: {
+        searchParams: URLSearchParams;
+        url: URL;
+      };
+      original: {
+        searchParams: URLSearchParams;
+        url: URL;
+      };
     }
   | {
       type: "api";
       request: Request;
       routeParams: Record<string, string | undefined>;
       authCache: Map<string, unknown>;
+      rewrittenTo: {
+        searchParams: URLSearchParams;
+        url: URL;
+      };
+      original: {
+        searchParams: URLSearchParams;
+        url: URL;
+      };
     }
   | {
       type: "client-asset";
