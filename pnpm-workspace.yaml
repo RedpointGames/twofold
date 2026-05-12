@@ -3,6 +3,10 @@ packages:
   - examples/*
   - sites/*
 
+allowBuilds:
+  esbuild: true
+  sharp: true
+
 catalog:
   "@types/node": ^22.16.5
   "@types/react": ^19.2.14
