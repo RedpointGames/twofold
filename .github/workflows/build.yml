@@ -42,6 +42,7 @@ jobs:
       - name: Install Dependencies
         run: |
           corepack enable
+          pnpm approve-builds --all
           pnpm i --frozen-lockfile
       - name: Compile
         run: |
