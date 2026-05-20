@@ -166,7 +166,6 @@ function StackTrace(props: { stack: string; hideInternal: boolean }) {
         {internalFrames}
       </InternalFrames>,
     );
-    internalFrames = [];
   }
 
   return (
