@@ -99,7 +99,7 @@ function componentsToTree<T extends object>(
 }
 
 const protectedAssetPathRegex =
-  /^\/assets\/(p-[0-9a-f]{16})-[a-zA-Z0-9_-]{8}\.js$/;
+  /^\/assets\/(p-[0-9a-f]{16})-[a-zA-Z0-9_-]{8}\.(.+)$/;
 
 export class ApplicationRuntime {
   #root: Layout;
