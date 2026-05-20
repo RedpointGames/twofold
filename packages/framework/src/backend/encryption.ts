@@ -67,18 +67,12 @@ async function decryptString(
 }
 
 async function encode(value: any) {
-  let serializationError: unknown;
-
   let rscStream = renderToReadableStream(value, {}, {});
 
   let decoder = new TextDecoder();
   let text = "";
   for await (let chunk of rscStream) {
     text += decoder.decode(chunk);
-  }
-
-  if (serializationError) {
-    throw serializationError;
   }
 
   return text;
