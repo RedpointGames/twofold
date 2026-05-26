@@ -302,14 +302,6 @@ function useURLFromPath(path: string) {
 }
 
 async function main() {
-  if (
-    "__NO_HYDRATE" in globalThis &&
-    (globalThis as any).__NO_HYDRATE === "2"
-  ) {
-    // In development, skip createRoot at all so we can see the SSR error directly.
-    return;
-  }
-
   let tree = (
     <StrictMode>
       <BrowserApp />
@@ -348,7 +340,7 @@ async function main() {
     },
   };
 
-  if ("__NO_HYDRATE" in globalThis) {
+  if (document.body.getAttribute("no-hydrate") === "true") {
     createRoot(document, errorOptions).render(tree);
   } else {
     const initialPayload = await getInitialPayload();

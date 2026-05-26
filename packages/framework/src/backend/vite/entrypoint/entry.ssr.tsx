@@ -1,5 +1,5 @@
 import { createFromReadableStream } from "@vitejs/plugin-rsc/ssr";
-import React, { Suspense } from "react";
+import React from "react";
 import type { ErrorInfo, ReactFormState } from "react-dom/client";
 import { renderToReadableStream } from "react-dom/server.edge";
 import { injectRSCPayload } from "rsc-html-stream/server";
@@ -115,38 +115,16 @@ export async function renderHtml(
   function SsrRoot() {
     payload ??= createFromReadableStream(rscStreamForSsr);
     return (
-      <Suspense
-        fallback={
-          <html>
-            <MetaHeaders
-              telemetryTraceMetaHeaders={options.telemetryTraceMetaHeaders}
-            />
-            <body>
-              {!options.debugNojs ? (
-                <noscript>
-                  <PageRequiresJavaScript />
-                </noscript>
-              ) : (
-                <PageRequiresJavaScript />
-              )}
-            </body>
-          </html>
-        }
-      >
-        <SsrApp
-          url={options.url}
-          payload={payload}
-          telemetryTraceMetaHeaders={options.telemetryTraceMetaHeaders}
-        />
-      </Suspense>
+      <SsrApp
+        url={options.url}
+        payload={payload}
+        telemetryTraceMetaHeaders={options.telemetryTraceMetaHeaders}
+      />
     );
   }
 
-  const bootstrapScriptContent =
-    await import.meta.viteRsc.loadBootstrapScriptContent("index");
-  let responseStream: ReadableStream<Uint8Array> = await renderToReadableStream(
-    <SsrRoot />,
-    {
+  const renderTreeToReadableStream = async (children: React.ReactNode) => {
+    return await renderToReadableStream(children, {
       bootstrapScriptContent: options?.debugNojs
         ? undefined
         : bootstrapScriptContent,
@@ -160,21 +138,34 @@ export async function renderHtml(
           errorInfo,
           type: "recoverable",
         });
-
-        // We must return digest here so that the error thrown by renderToReadableStream will have the digest value necessary for the router to correctly detect special errors.
-        if (
-          typeof error === "object" &&
-          error !== null &&
-          "digest" in error &&
-          typeof error.digest === "string"
-        ) {
-          return error.digest;
-        } else {
-          return undefined;
-        }
       },
-    },
-  );
+    });
+  };
+
+  const bootstrapScriptContent =
+    await import.meta.viteRsc.loadBootstrapScriptContent("index");
+  let responseStream: ReadableStream<Uint8Array>;
+  try {
+    responseStream = await renderTreeToReadableStream(<SsrRoot />);
+  } catch (err) {
+    // It is not possible to use <Suspense> above the <body> tag, otherwise hydration fails. If SSR fails, render a fallback page that tells the user that JavaScript is required (because catch boundaries only run on the client).
+    responseStream = await renderTreeToReadableStream(
+      <html>
+        <MetaHeaders
+          telemetryTraceMetaHeaders={options.telemetryTraceMetaHeaders}
+        />
+        <body no-hydrate="true">
+          {!options.debugNojs ? (
+            <noscript>
+              <PageRequiresJavaScript />
+            </noscript>
+          ) : (
+            <PageRequiresJavaScript />
+          )}
+        </body>
+      </html>,
+    );
+  }
 
   if (!options?.debugNojs) {
     responseStream = responseStream.pipeThrough(
