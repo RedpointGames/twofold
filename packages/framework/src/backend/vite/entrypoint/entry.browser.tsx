@@ -22,6 +22,7 @@ import { callServerAction } from "./browser/call-server.js";
 import { getInitialPayload } from "./browser/initial-payload.js";
 import { ProgressBarProvider, useProgress } from "react-transition-progress";
 import { clientTelemetry } from "../telemetry.client.js";
+import { MetaHeaders } from "./meta-headers.js";
 
 declare global {
   interface Window {
@@ -45,7 +46,20 @@ function BrowserApp() {
   );
 }
 
-let origin = typeof window !== "undefined" ? window.location.origin : "";
+const origin = typeof window !== "undefined" ? window.location.origin : "";
+
+// We need to read the telemetry headers from the document based on SSR generation so that we can pass them back into <MetaHeaders> so that the component tree is identical. This is necessary for useId() to generate the same IDs on SSR and browser. We do this only on document load and not in <Router> because we need to match what SSR sent, and not any later <head> tags that might get added by application code.
+const metaHeaders: { [name: string]: string } = {};
+const headElements = document.getElementsByTagName("head");
+for (let i = 0; i < headElements.length; i++) {
+  const element = headElements[i]!;
+  const name = element.getAttribute("name");
+  const content = element.getAttribute("content");
+  const isTelemetryHeader = element.getAttribute("x-is-telemetry-header");
+  if (isTelemetryHeader === "true" && name !== null && content !== null) {
+    metaHeaders[name] = content;
+  }
+}
 
 function Router() {
   let [routerState, dispatch] = useRouterReducer();
@@ -272,22 +286,25 @@ function Router() {
   let stack = routerState.stack ?? [];
 
   return (
-    <BrowserErrorBoundary>
-      <RoutingContext
-        version={routerState.version}
-        path={url.pathname}
-        mask={routerState.mask}
-        searchParams={url.searchParams}
-        optimisticPath={optimisticURL.pathname}
-        optimisticSearchParams={optimisticSearchParams}
-        isTransitioning={isTransitioning}
-        navigate={navigate}
-        replace={replace}
-        refresh={refresh}
-      >
-        <RouteStack stack={stack} />
-      </RoutingContext>
-    </BrowserErrorBoundary>
+    <>
+      <MetaHeaders telemetryTraceMetaHeaders={metaHeaders} />
+      <BrowserErrorBoundary>
+        <RoutingContext
+          version={routerState.version}
+          path={url.pathname}
+          mask={routerState.mask}
+          searchParams={url.searchParams}
+          optimisticPath={optimisticURL.pathname}
+          optimisticSearchParams={optimisticSearchParams}
+          isTransitioning={isTransitioning}
+          navigate={navigate}
+          replace={replace}
+          refresh={refresh}
+        >
+          <RouteStack stack={stack} />
+        </RoutingContext>
+      </BrowserErrorBoundary>
+    </>
   );
 }
 

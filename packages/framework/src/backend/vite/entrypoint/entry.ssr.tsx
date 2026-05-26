@@ -8,24 +8,7 @@ import { RouteStack } from "../../../client/apps/client/contexts/route-stack-con
 import { RoutingContext } from "../../../client/apps/client/contexts/routing-context.js";
 import { ProgressBarProvider } from "react-transition-progress";
 import { clientTelemetry } from "../telemetry.client.js";
-
-function MetaHeaders(props: {
-  telemetryTraceMetaHeaders: { [name: string]: string };
-}) {
-  let metaHeaders = [];
-  for (const name of Object.getOwnPropertyNames(
-    props.telemetryTraceMetaHeaders,
-  )) {
-    metaHeaders.push(
-      <meta
-        key={name}
-        name={name}
-        content={props.telemetryTraceMetaHeaders[name]}
-      />,
-    );
-  }
-  return metaHeaders;
-}
+import { MetaHeaders } from "./meta-headers.js";
 
 function PageRequiresJavaScript() {
   return (
