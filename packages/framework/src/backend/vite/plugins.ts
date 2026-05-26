@@ -1,4 +1,4 @@
-import react from "@vitejs/plugin-react";
+import react, { reactCompilerPreset } from "@vitejs/plugin-react";
 import rsc, { getPluginApi } from "@vitejs/plugin-rsc";
 import { type InlineConfig, mergeConfig, type Plugin } from "vite";
 import tailwindcss from "@tailwindcss/vite";
@@ -6,6 +6,7 @@ import { RscPluginManager } from "@vitejs/plugin-rsc/plugin";
 import { exactRegex, prefixRegex } from "@rolldown/pluginutils";
 import path from "node:path";
 import xxhash from "xxhash-wasm";
+import babel from "@rolldown/plugin-babel";
 
 const xxhash64 = await xxhash();
 
@@ -397,6 +398,9 @@ export function withTwofold(
           },
         }),
         react(),
+        babel({
+          presets: [reactCompilerPreset()],
+        }),
         twofoldServerApplicationRouter(),
         twofoldGlobalMiddleware(baseDir),
         twofoldGlobalAuth(baseDir),
