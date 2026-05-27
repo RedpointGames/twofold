@@ -51,6 +51,7 @@ const origin = typeof window !== "undefined" ? window.location.origin : "";
 // We need to read the telemetry headers from the document based on SSR generation so that we can pass them back into <MetaHeaders> so that the component tree is identical. This is necessary for useId() to generate the same IDs on SSR and browser. We do this only on document load and not in <Router> because we need to match what SSR sent, and not any later <head> tags that might get added by application code.
 const metaHeaders: { [name: string]: string } = {};
 const headElements = document.getElementsByTagName("head");
+let noHydrate = false;
 for (let i = 0; i < headElements.length; i++) {
   const element = headElements[i]!;
   const name = element.getAttribute("name");
@@ -58,6 +59,9 @@ for (let i = 0; i < headElements.length; i++) {
   const isTelemetryHeader = element.getAttribute("x-is-telemetry-header");
   if (isTelemetryHeader === "true" && name !== null && content !== null) {
     metaHeaders[name] = content;
+    if (name === "x-react-no-hydrate" && content === "true") {
+      noHydrate = true;
+    }
   }
 }
 
@@ -357,7 +361,7 @@ async function main() {
     },
   };
 
-  if (document.body.getAttribute("no-hydrate") === "true") {
+  if (noHydrate) {
     createRoot(document, errorOptions).render(tree);
   } else {
     const initialPayload = await getInitialPayload();

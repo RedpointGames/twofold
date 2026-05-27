@@ -106,6 +106,19 @@ function twofoldGlobalAuth(baseDir: string): Plugin {
   });
 }
 
+function twofoldSsrErrorComponent(baseDir: string): Plugin {
+  return createVirtualPlugin("ssr-error-page", {
+    async resolveId(_source, _importer, options) {
+      const ssrErrorPage = `${baseDir}/app/pages/ssr.error.tsx`;
+      const resolved = await this.resolve(ssrErrorPage, undefined, options);
+      return resolved;
+    },
+    load() {
+      return "export default undefined";
+    },
+  });
+}
+
 function twofoldTelemetryClient(baseDir: string): Plugin {
   return createVirtualPlugin("telemetry-client", {
     async resolveId(_source, _importer, options) {
@@ -404,6 +417,7 @@ export function withTwofold(
         twofoldServerApplicationRouter(),
         twofoldGlobalMiddleware(baseDir),
         twofoldGlobalAuth(baseDir),
+        twofoldSsrErrorComponent(baseDir),
         twofoldServerReferencesMetaMapDev(baseDir),
         twofoldServerReferencesMetaMapBuild(baseDir),
         twofoldClientReferencesMetaMapBuild(baseDir),

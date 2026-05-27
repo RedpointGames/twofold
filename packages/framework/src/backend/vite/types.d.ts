@@ -31,6 +31,10 @@ declare module "virtual:twofold/server-global-auth" {
     | undefined;
   export default default_;
 }
+declare module "virtual:twofold/ssr-error-page" {
+  const default_: FunctionComponent<SsrErrorProps> | undefined;
+  export default default_;
+}
 declare module "virtual:twofold/telemetry-server" {
   const default_: ServerTelemetry | undefined;
   export default default_;

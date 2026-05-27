@@ -9,6 +9,8 @@ import { RoutingContext } from "../../../client/apps/client/contexts/routing-con
 import { ProgressBarProvider } from "react-transition-progress";
 import { clientTelemetry } from "../telemetry.client.js";
 import { MetaHeaders } from "./meta-headers.js";
+import CustomSsrErrorPage from "virtual:twofold/ssr-error-page";
+import type { FunctionComponent } from "react";
 
 function PageRequiresJavaScript() {
   return (
@@ -82,6 +84,31 @@ function SsrApp(props: {
   );
 }
 
+function LastResortSsrErrorPage(props: {
+  telemetryTraceMetaHeaders: { [name: string]: string };
+  debugNojs?: boolean;
+}) {
+  return (
+    <html>
+      <MetaHeaders
+        telemetryTraceMetaHeaders={{
+          ...props.telemetryTraceMetaHeaders,
+          "x-react-no-hydrate": "true",
+        }}
+      />
+      <body>
+        {!props.debugNojs ? (
+          <noscript>
+            <PageRequiresJavaScript />
+          </noscript>
+        ) : (
+          <PageRequiresJavaScript />
+        )}
+      </body>
+    </html>
+  );
+}
+
 export async function renderHtml(
   rscStream: ReadableStream<Uint8Array>,
   options: {
@@ -131,32 +158,57 @@ export async function renderHtml(
   try {
     responseStream = await renderTreeToReadableStream(<SsrRoot />);
   } catch (err) {
-    // It is not possible to use <Suspense> above the <body> tag, otherwise hydration fails. If SSR fails, render a fallback page that tells the user that JavaScript is required (because catch boundaries only run on the client).
-    responseStream = await renderTreeToReadableStream(
-      <html>
-        <MetaHeaders
+    let gotResponseStreamForCustomSsrPage = false;
+    if (CustomSsrErrorPage !== undefined) {
+      try {
+        responseStream = await renderTreeToReadableStream(
+          <CustomSsrErrorPage
+            error={err}
+            metaHeaders={
+              <MetaHeaders
+                telemetryTraceMetaHeaders={{
+                  ...options.telemetryTraceMetaHeaders,
+                  "x-react-no-hydrate": "true",
+                }}
+              />
+            }
+            withNoScriptTag={(Component: FunctionComponent<object>) => {
+              if (!options.debugNojs) {
+                return (
+                  <noscript>
+                    <Component />
+                  </noscript>
+                );
+              } else {
+                return <Component />;
+              }
+            }}
+          />,
+        );
+        gotResponseStreamForCustomSsrPage = true;
+      } catch (err) {
+        // No need to action here; the error on the custom SSR page will have been sent to client telemetry as well.
+      }
+    }
+
+    if (!gotResponseStreamForCustomSsrPage) {
+      // It is not possible to use <Suspense> above the <body> tag, otherwise hydration fails. If SSR fails, render a fallback page that tells the user that JavaScript is required (because catch boundaries only run on the client).
+      responseStream = await renderTreeToReadableStream(
+        <LastResortSsrErrorPage
           telemetryTraceMetaHeaders={options.telemetryTraceMetaHeaders}
-        />
-        <body no-hydrate="true">
-          {!options.debugNojs ? (
-            <noscript>
-              <PageRequiresJavaScript />
-            </noscript>
-          ) : (
-            <PageRequiresJavaScript />
-          )}
-        </body>
-      </html>,
-    );
+          debugNojs={options.debugNojs}
+        />,
+      );
+    }
   }
 
   if (!options?.debugNojs) {
-    responseStream = responseStream.pipeThrough(
+    responseStream = responseStream!.pipeThrough(
       injectRSCPayload(rscStreamForBrowserFlightData, {
         nonce: options?.nonce,
       }),
     );
   }
 
-  return responseStream;
+  return responseStream!;
 }

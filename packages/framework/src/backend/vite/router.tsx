@@ -1405,12 +1405,18 @@ export class ApplicationRuntime {
       .map((relativePath) => {
         let path = `/${ApplicationRuntime.snipSuffix(relativePath.slice(2), ".error")}`;
         let tag = path.split("/").at(-1) ?? "unknown";
-        return new ErrorTemplate({
-          tag,
-          path,
-          loadModule: modules[relativePath]! as () => Promise<ModuleSurface>,
-        });
-      });
+        if (tag === "ssr") {
+          // special page at root for custom SSR fallback; never rendered by the client or placed in the normal tree.
+          return undefined;
+        } else {
+          return new ErrorTemplate({
+            tag,
+            path,
+            loadModule: modules[relativePath]! as () => Promise<ModuleSurface>,
+          });
+        }
+      })
+      .filter((x) => x !== undefined);
 
     // if there is no root level unauthorized template we will add the default
     if (!templates.some((t) => t.tag === "unauthorized" && t.path === "/")) {

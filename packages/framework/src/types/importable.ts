@@ -1,7 +1,7 @@
 // these types are importable by the application
 
-import type { ReactNode } from "react";
-import { UserConfig } from "vite";
+import type { ReactNode, FunctionComponent } from "react";
+import type { UserConfig } from "vite";
 
 export type MetadataProps<
   T extends string | never = never,
@@ -39,6 +39,12 @@ export type LayoutProps<M extends object | never = never> = MetadataProps<
 export type ErrorProps = {
   error: Error & { digest?: string };
   reset: () => void;
+};
+
+export type SsrErrorProps = {
+  error: Error;
+  metaHeaders: React.ReactNode;
+  withNoScriptTag: (component: FunctionComponent<object>) => React.ReactNode;
 };
 
 export type APIProps<
