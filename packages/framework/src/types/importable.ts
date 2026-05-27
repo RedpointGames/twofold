@@ -1,6 +1,6 @@
 // these types are importable by the application
 
-import type { ReactNode, FunctionComponent } from "react";
+import type { ReactNode, FunctionComponent, HTMLAttributes } from "react";
 import type { UserConfig } from "vite";
 
 export type MetadataProps<
@@ -44,7 +44,10 @@ export type ErrorProps = {
 export type SsrErrorProps = {
   error: Error;
   metaHeaders: React.ReactNode;
-  withNoScriptTag: (component: FunctionComponent<object>) => React.ReactNode;
+  withNoScriptTag: (
+    component: FunctionComponent<object>,
+    attrs?: HTMLAttributes<HTMLElement>,
+  ) => React.ReactNode;
 };
 
 export type APIProps<

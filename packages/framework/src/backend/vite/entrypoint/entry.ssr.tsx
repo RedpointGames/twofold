@@ -10,7 +10,7 @@ import { ProgressBarProvider } from "react-transition-progress";
 import { clientTelemetry } from "../telemetry.client.js";
 import { MetaHeaders } from "./meta-headers.js";
 import CustomSsrErrorPage from "virtual:twofold/ssr-error-page";
-import type { FunctionComponent } from "react";
+import type { FunctionComponent, HTMLAttributes } from "react";
 
 function PageRequiresJavaScript() {
   return (
@@ -172,10 +172,13 @@ export async function renderHtml(
                 }}
               />
             }
-            withNoScriptTag={(Component: FunctionComponent<object>) => {
+            withNoScriptTag={(
+              Component: FunctionComponent<object>,
+              attrs?: HTMLAttributes<HTMLElement>,
+            ) => {
               if (!options.debugNojs) {
                 return (
-                  <noscript>
+                  <noscript {...attrs}>
                     <Component />
                   </noscript>
                 );
