@@ -212,14 +212,31 @@ export const serverTelemetry = defineServerTelemetry_requireAllHooks({
         context.renderRequest,
         tfPaths.throwing.notFound,
       );
-    } else if (isUnauthorizedError(context.error)) {
-      // @note: We do not return the unauthorized page here
-      // in case the client wants to catch the unauthorized error.
+    } else if (
+      isUnauthorizedError(context.error) &&
+      !context.renderRequest.isRsc
+    ) {
+      // We only return the unauthorized page for an action when the request is not
+      // an RSC request (i.e. a form POST by a non-JS browser). RSC requests will
+      // forward the unauthorized error to the client JS.
+      return await context.applicationRuntime.noAuthChecks_runSpecialPage(
+        context.renderRequest,
+        tfPaths.throwing.unauthorized,
+      );
     } else if (isRedirectError(context.error)) {
       const redirectInfo = redirectErrorInfo(context.error);
       return context.applicationRuntime.createRedirectResponse(
         context.renderRequest,
         redirectInfo.url,
+      );
+    } else if (!context.renderRequest.isRsc) {
+      // We only render the internal server error page for an action when the request
+      // is not an RSC request (i.e. a form POST by a non-JS browser). RSC requests
+      // will forward the error to the client JS.
+      return await context.applicationRuntime.noAuthChecks_runSpecialPage(
+        context.renderRequest,
+        tfPaths.throwing.internalServerError,
+        context.error,
       );
     }
   },
