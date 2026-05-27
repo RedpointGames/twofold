@@ -1,3 +1,7 @@
+import { notFound } from "@twofold/framework/not-found";
+import { redirect } from "@twofold/framework/redirect";
+import { unauthorized } from "@twofold/framework/unauthorized";
+
 let name = "ryan";
 
 async function handleFormArg(form: FormData) {
@@ -5,6 +9,16 @@ async function handleFormArg(form: FormData) {
 
   let formName = form.get("name");
   if (typeof formName === "string") {
+    if (formName === "error") {
+      throw new Error("this is an error");
+    } else if (formName === "not-found") {
+      notFound();
+    } else if (formName === "unauthorized") {
+      unauthorized();
+    } else if (formName === "redirect") {
+      redirect("/server-actions/form-data-bound");
+    }
+
     name = formName;
   }
 }
