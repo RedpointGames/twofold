@@ -1,12 +1,12 @@
 import "server-only";
 import { parseHeaderValue } from "@hattip/headers";
 import { headerContentType } from "../content-types.js";
-import { decodeFormState } from "@vitejs/plugin-rsc/rsc";
 import {
   rscPageUrlPrefix,
   rscActionUrlPrefix,
   headerTwofoldServerReference,
 } from "./request.js";
+import { decodeActionId } from "./decode-form-state.js";
 
 export enum RenderRequestActionType {
   Request,
@@ -33,13 +33,6 @@ export type RenderRequest =
       params: Record<string, string | undefined>;
     };
 
-type ReactFormStateInternal = [
-  any /* actual state value */,
-  string /* key path */,
-  string /* reference ID */,
-  number /* number of bound arguments */,
-];
-
 export async function parseRenderRequest(
   request: Request,
 ): Promise<RenderRequest> {
@@ -54,14 +47,12 @@ export async function parseRenderRequest(
     if (contentType && contentType.value === "multipart/form-data") {
       const clonedRequest = request.clone();
       const resolvedFormData = await clonedRequest.formData();
-      const formState = (await decodeFormState(null, resolvedFormData)) as
-        | ReactFormStateInternal
-        | undefined;
-      if (formState !== undefined && formState !== null) {
+      const actionId = decodeActionId(resolvedFormData);
+      if (actionId !== null) {
         return {
           isRsc: false,
           isAction: true,
-          actionId: formState[2],
+          actionId,
           actionType: RenderRequestActionType.FormState,
           request: request,
           url: url,

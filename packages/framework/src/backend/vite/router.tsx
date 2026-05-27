@@ -395,13 +395,6 @@ export class ApplicationRuntime {
         });
       }
 
-      // Return response from action result if it's present and
-      // we don't have an RSC stream or response already set via
-      // error handling.
-      if (actionResult?.response && !rscStreamOrResponse) {
-        return actionResult.response;
-      }
-
       // This is now a page request; set context appropriately.
       let store = getStore();
       if (store) {
@@ -829,25 +822,13 @@ export class ApplicationRuntime {
     const unauthorizedAction = (error?: Error): ActionResultData => {
       const errorToReturn = error ?? new UnauthorizedError();
       return {
-        returnValue:
-          actionType === RenderRequestActionType.Request
-            ? {
-                type: "throw",
-                error: errorToReturn,
-              }
-            : undefined,
+        returnValue: {
+          type: "throw",
+          error: errorToReturn,
+        },
         actionStatus: undefined,
         formState: undefined,
         temporaryReferences: undefined,
-        response:
-          actionType === RenderRequestActionType.FormState
-            ? new Response(
-                "You do not have permission to perform this action",
-                {
-                  status: 403,
-                },
-              )
-            : undefined,
         error: error,
       };
     };
@@ -928,7 +909,6 @@ export class ApplicationRuntime {
         actionStatus: undefined,
         formState: undefined,
         temporaryReferences,
-        response: undefined,
         error: undefined,
       };
     } catch (e) {
@@ -943,7 +923,6 @@ export class ApplicationRuntime {
         actionStatus: 500,
         formState: undefined,
         temporaryReferences,
-        response: undefined,
         error: e,
       };
     }
@@ -961,18 +940,20 @@ export class ApplicationRuntime {
         actionStatus: undefined,
         formState: await decodeFormState(result, formData),
         temporaryReferences: undefined,
-        response: undefined,
         error: undefined,
       };
     } catch (e) {
       return {
-        returnValue: undefined,
+        returnValue: {
+          type: "throw",
+          error:
+            e instanceof Error
+              ? e
+              : new Error(e?.toString() ?? "unknown error"),
+        },
         actionStatus: undefined,
         formState: undefined,
         temporaryReferences: undefined,
-        response: new Response("Internal Server Error: server action failed", {
-          status: 500,
-        }),
         error: e,
       };
     }

@@ -49,6 +49,5 @@ export class ActionResultData {
   actionStatus: number | undefined;
   formState: ReactFormState | undefined;
   temporaryReferences: unknown | undefined;
-  response: Response | undefined;
   error: unknown | undefined;
 }
