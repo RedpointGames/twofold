@@ -29,7 +29,7 @@
     "react-server-dom-webpack": "catalog:",
     "sharp": "^0.34.5",
     "tailwindcss": "^4.2.4",
-    "zod": "^4.3.6",
+    "zod": "^4.4.3",
     "react-transition-progress": "^0.0.4"
   },
   "devDependencies": {
