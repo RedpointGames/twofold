@@ -377,7 +377,7 @@ export default function Nav() {
                       <ExampleLink
                         title="Rewrites"
                         description="Handle rewrites for URLs."
-                        href="/routing/rewrites/another"
+                        href="/routing/rewrites/a/nested"
                       />
                     </ExampleGroup>
 

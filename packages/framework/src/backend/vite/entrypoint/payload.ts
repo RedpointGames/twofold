@@ -13,7 +13,7 @@ export type RscActionPayload =
 
 export type RscPayload = {
   stack: RouteStackEntry[];
-  path: string;
+  originalPath: string;
   action: RscActionPayload | undefined;
   formState: ReactFormState | undefined;
 };

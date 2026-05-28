@@ -183,7 +183,9 @@ export class ApplicationRuntime {
                   error: error,
                 },
               ],
-              path: getPathForRouterFromRscUrl(new URL(ctx.request.url)),
+              originalPath: getPathForRouterFromRscUrl(
+                new URL(ctx.request.url),
+              ),
               action: undefined,
               formState: undefined,
             },
@@ -1155,7 +1157,7 @@ export class ApplicationRuntime {
 
     const rscPayload: RscPayload = {
       stack: routeStack,
-      path: getPathForRouterFromRscUrl(renderRequest.url),
+      originalPath: getPathForRouterFromRscUrl(renderRequest.originalUrl),
       action: actionResult?.returnValue,
       formState: actionResult?.formState,
     };

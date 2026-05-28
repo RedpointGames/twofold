@@ -20,9 +20,9 @@ function getOriginalPathFromRscUrlForCatastrophicError(url: URL) {
 }
 
 export async function fetchPageAsRscPayload(
-  renderRequest: Request,
+  rscRequest: Request,
 ): Promise<RscPayload> {
-  const response = await fetch(renderRequest);
+  const response = await fetch(rscRequest);
   const contentType = response.headers.get(headerContentType);
   if (isContentType.rsc(contentType)) {
     // Got an RSC stream, which is what we expect.
@@ -35,7 +35,7 @@ export async function fetchPageAsRscPayload(
     // URL to the history.
     await clientTelemetry.onClientSideUnexpectedRscResponse({
       type: "page",
-      request: renderRequest,
+      request: rscRequest,
       response: response,
     });
     return {
@@ -48,10 +48,8 @@ export async function fetchPageAsRscPayload(
               : new Error(`${response.status}: ${response.statusText}`),
         },
       ],
-      path: getPathForRouterFromRscUrl(
-        getOriginalPathFromRscUrlForCatastrophicError(
-          new URL(renderRequest.url),
-        ),
+      originalPath: getPathForRouterFromRscUrl(
+        getOriginalPathFromRscUrlForCatastrophicError(new URL(rscRequest.url)),
       ),
       action: undefined,
       formState: undefined,

@@ -118,8 +118,8 @@ function reducer(state: Promise<State>, action: Action): Promise<State> {
               initiator: "client-side-navigation",
             });
 
-            path = rsc.path;
-            newCache.set(rsc.path, rsc.stack);
+            path = rsc.originalPath;
+            newCache.set(rsc.originalPath, rsc.stack);
           }
 
           return {
@@ -171,7 +171,7 @@ function reducer(state: Promise<State>, action: Action): Promise<State> {
           });
 
           let newCache = new Map(previous.cache);
-          newCache.set(rsc.path, rsc.stack);
+          newCache.set(rsc.originalPath, rsc.stack);
 
           return {
             ...previous,
@@ -192,9 +192,9 @@ function reducer(state: Promise<State>, action: Action): Promise<State> {
           });
 
           let newCache = new Map(previous.cache);
-          newCache.set(rsc.path, rsc.stack);
+          newCache.set(rsc.originalPath, rsc.stack);
 
-          if (action.path !== rsc.path) {
+          if (action.path !== rsc.originalPath) {
             // we're trying to populate action.path, but the rsc fetch is
             // is giving us a stack for a different path. this is likely
             // because of a redirect.
@@ -231,12 +231,12 @@ function reducer(state: Promise<State>, action: Action): Promise<State> {
           });
 
           let newCache = new Map(previous.cache);
-          newCache.set(rsc.path, rsc.stack);
+          newCache.set(rsc.originalPath, rsc.stack);
 
           return {
             ...previous,
             version: previous.version + 1,
-            path: rsc.path,
+            path: rsc.originalPath,
             mask: action.mask,
             action: "render",
             history: "replace",
