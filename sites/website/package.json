@@ -22,7 +22,7 @@
     "@radix-ui/react-popover": "^1.1.15",
     "@radix-ui/react-switch": "^1.2.6",
     "@radix-ui/react-tabs": "^1.1.13",
-    "@shikijs/transformers": "^3.13.0",
+    "@shikijs/transformers": "^4.1.0",
     "@sindresorhus/slugify": "^3.0.0",
     "@tailwindcss/typography": "^0.5.19",
     "@twofold/framework": "workspace:*",
