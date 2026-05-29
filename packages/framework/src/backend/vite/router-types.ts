@@ -35,6 +35,7 @@ export type ModuleSurface<T = ModuleSurfaceExportReact> = T & {
   metadata?:
     | object
     | ((props: MetadataProps<string, string | undefined>) => Promise<object>);
+  apiTakesPriority?: boolean;
 };
 
 export type ModuleMap = {

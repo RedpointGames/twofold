@@ -358,7 +358,9 @@ export class ApplicationRuntime {
             potentialMatchingPage?.isDynamic ||
             potentialMatchingPage?.isCatchAll;
           const apiIsDynamic = api.isDynamic || api.isCatchAll;
-          const apiTakesPrecedence = !apiIsDynamic && pageIsDynamic;
+          const apiTakesPrecedence =
+            (!apiIsDynamic && pageIsDynamic) ||
+            (await api.getApiTakesPriority());
 
           const skipApi = pageExists && acceptsHTML && !apiTakesPrecedence;
           if (!skipApi) {

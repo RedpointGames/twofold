@@ -79,6 +79,10 @@ export class API implements Treeable {
     return this.parents.filter((p) => p instanceof Layout);
   }
 
+  async getApiTakesPriority() {
+    return (await this.loadModule()).apiTakesPriority ?? false;
+  }
+
   async loadModule() {
     return await this.#loadModule();
   }
