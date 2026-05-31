@@ -37,7 +37,6 @@ import {
   isContentType,
 } from "./content-types.js";
 import catastrophicErrorHtml from "./catastrophic-internal-error.html?raw";
-import type { NodePlatformInfo } from "@hattip/adapter-node/native-fetch";
 import globalMiddleware from "virtual:twofold/server-global-middleware";
 import { tfPaths } from "./special-pages.js";
 import type { ReplacementResponse } from "./replacement-response.js";
@@ -470,7 +469,7 @@ export class ApplicationRuntime {
   }
 
   async fetchFromContext(
-    context: AdapterRequestContext<NodePlatformInfo>,
+    context: AdapterRequestContext<unknown>,
   ): Promise<Response> {
     return await this.#handler(context);
   }

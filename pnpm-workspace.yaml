@@ -6,6 +6,7 @@ packages:
 allowBuilds:
   esbuild: true
   sharp: true
+  workerd: true
 
 catalog:
   "@types/node": ^22.16.5

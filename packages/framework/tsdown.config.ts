@@ -12,9 +12,10 @@ export default defineConfig([
       sourcemap: process.argv.slice(2).includes("--sourcemap"),
     },
   },
+  /*
   {
     entry: [
-      "./src/backend/vite/production/server.ts",
+      "./src/backend/vite/production/server.node.ts",
       "./src/backend/vite/production/server/index.js",
     ],
     format: ["esm"],
@@ -27,4 +28,20 @@ export default defineConfig([
     fixedExtension: false,
     dts: false,
   },
+  {
+    entry: [
+      "./src/backend/vite/production/server.cloudflare.ts",
+      "./src/backend/vite/production/server/index.js",
+    ],
+    format: ["esm"],
+    outDir: "./dist/backend/vite/production",
+    platform: "node",
+    deps: {
+      onlyBundle: false,
+      alwaysBundle: [/.+/],
+    },
+    fixedExtension: false,
+    dts: false,
+  },
+  */
 ]);

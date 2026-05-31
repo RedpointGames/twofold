@@ -48,10 +48,17 @@
       "browser": "./src/backend/vite/entrypoint/entry.browser.tsx"
     },
     "./internal/entrypoint/entry.ssr.tsx": {
-      "node": "./src/backend/vite/entrypoint/entry.ssr.tsx"
+      "node": "./src/backend/vite/entrypoint/entry.ssr.tsx",
+      "workerd": "./src/backend/vite/entrypoint/entry.ssr.tsx"
     },
     "./internal/entrypoint/entry.server.ts": {
       "react-server": "./src/backend/vite/entrypoint/entry.server.ts"
+    },
+    "./internal/production/server.node.ts": {
+      "node": "./src/backend/vite/production/server.node.ts"
+    },
+    "./internal/production/server.cloudflare.ts": {
+      "workerd": "./src/backend/vite/production/server.cloudflare.ts"
     }
   },
   "keywords": [],
@@ -95,6 +102,8 @@
   },
   "dependencies": {
     "@babel/core": "^7.29.0",
+    "@cloudflare/vite-plugin": "^1.39.0",
+    "@hattip/adapter-cloudflare-workers": "^0.0.49",
     "@hattip/adapter-node": "^0.0.49",
     "@hattip/compose": "^0.0.49",
     "@hattip/cookie": "^0.0.49",

@@ -7,6 +7,8 @@ import { exactRegex, prefixRegex } from "@rolldown/pluginutils";
 import path from "node:path";
 import xxhash from "xxhash-wasm";
 import babel from "@rolldown/plugin-babel";
+import { cloudflare } from "@cloudflare/vite-plugin";
+import { fileURLToPath } from "node:url";
 
 const xxhash64 = await xxhash();
 
@@ -341,28 +343,53 @@ export default {
   };
 }
 
-export function withTwofold(
-  config: InlineConfig,
-  isBuild: boolean,
-): InlineConfig {
-  const baseDir = process.cwd();
-  return mergeConfig(
-    {
-      configFile: false,
-      resolve: {
-        noExternal: isBuild ? true : undefined,
-        alias: [
-          {
-            find: "@",
-            replacement: process.cwd(),
+export enum Target {
+  Node,
+  Cloudflare,
+}
+
+function getEnvironment(target: Target, isBuild: boolean) {
+  switch (target) {
+    case Target.Node:
+      return {
+        client: {
+          build: {
+            outDir: ".twofold/client",
+            rolldownOptions: {
+              input: {
+                index:
+                  "@twofold/framework/internal/entrypoint/entry.browser.tsx",
+              },
+            },
           },
-        ],
-      },
-      optimizeDeps: {
-        exclude: ["@redpointgames/framework"],
-      },
-      assetsInclude: ["**/*.html"],
-      environments: {
+        },
+        ssr: {
+          build: {
+            outDir: ".twofold/ssr",
+            rolldownOptions: {
+              input: {
+                index: "@twofold/framework/internal/entrypoint/entry.ssr.tsx",
+              },
+              platform: "node",
+            },
+          },
+        },
+        rsc: {
+          build: {
+            outDir: ".twofold",
+            rolldownOptions: {
+              input: {
+                index: isBuild
+                  ? "@twofold/framework/internal/production/server.node.ts"
+                  : "@twofold/framework/internal/entrypoint/entry.server.ts",
+              },
+              platform: "node",
+            },
+          },
+        },
+      };
+    case Target.Cloudflare:
+      return {
         client: {
           build: {
             outDir: ".twofold/client",
@@ -386,7 +413,7 @@ export function withTwofold(
         },
         rsc: {
           build: {
-            outDir: ".twofold/server",
+            outDir: ".twofold",
             rolldownOptions: {
               input: {
                 index: "@twofold/framework/internal/entrypoint/entry.server.ts",
@@ -394,7 +421,35 @@ export function withTwofold(
             },
           },
         },
+      };
+    default:
+      throw new Error("Unsupported target");
+  }
+}
+
+export function withTwofold(
+  config: InlineConfig,
+  isBuild: boolean,
+  target: Target,
+): InlineConfig {
+  const baseDir = process.cwd();
+  return mergeConfig(
+    {
+      configFile: false,
+      resolve: {
+        noExternal: isBuild ? true : undefined,
+        alias: [
+          {
+            find: "@",
+            replacement: process.cwd(),
+          },
+        ],
       },
+      optimizeDeps: {
+        exclude: ["@twofold/framework"],
+      },
+      assetsInclude: ["**/*.html"],
+      environments: getEnvironment(target, isBuild),
       plugins: [
         tailwindcss(),
         rsc({
@@ -423,6 +478,27 @@ export function withTwofold(
         twofoldClientReferencesMetaMapBuild(baseDir),
         twofoldTelemetryClient(baseDir),
         twofoldTelemetryServer(baseDir),
+        target === Target.Cloudflare
+          ? cloudflare({
+              viteEnvironment: {
+                name: "rsc",
+                childEnvironments: ["ssr"],
+              },
+              config(config) {
+                config.main = path.join(
+                  path.dirname(fileURLToPath(import.meta.url)),
+                  "../../../src/backend/vite/production/server.cloudflare.ts",
+                );
+                config.assets = {
+                  directory: "client",
+                  binding: "ASSETS",
+                  // this is necessary to implement asset protection
+                  not_found_handling: "none",
+                  run_worker_first: true,
+                };
+              },
+            })
+          : [],
       ],
     },
     config ?? {},

@@ -2,24 +2,14 @@
 import "dotenv/config";
 import { Command } from "commander";
 import * as vite from "vite";
-import { withTwofold } from "./vite/plugins.js";
-import {
-  chmodSync,
-  existsSync,
-  readFileSync,
-  statSync,
-  writeFileSync,
-} from "node:fs";
-import { copyFile } from "node:fs/promises";
+import { Target, withTwofold } from "./vite/plugins.js";
+import { existsSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import kleur from "kleur";
 import { randomBytes } from "node:crypto";
 import { Config } from "../types/importable.js";
 import { homedir } from "node:os";
 import { createCA, createCert } from "mkcert";
-
-const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
 let nodeVersion = process.versions.node.split(".").map(Number);
 
@@ -103,9 +93,13 @@ program
     "3000",
   )
   .option("-h, --https", "Enable HTTPS", false)
+  .option("--cf", "Run for Cloudflare Workers instead of Node", false)
   .description("Run the development server")
   .action(async (options) => {
     process.env.NODE_ENV = "development";
+
+    const cf = typeof options.cf === "boolean" ? options.cf : false;
+    const target = cf ? Target.Cloudflare : Target.Node;
 
     {
       let key = process.env.TWOFOLD_SECRET_KEY;
@@ -131,7 +125,7 @@ program
           );
           const previousUrls = server.resolvedUrls;
           await server.close();
-          const newServer = await startDevServer(true);
+          const newServer = await startDevServer(true, target);
           if (previousUrls) {
             server.resolvedUrls = newServer.resolvedUrls;
           }
@@ -143,6 +137,7 @@ program
 
     async function startDevServer(
       isRestart: boolean,
+      target: Target,
     ): Promise<vite.ViteDevServer> {
       const port = parseInt(options.port, 10) || 3000;
       const https = typeof options.https === "boolean" ? options.https : false;
@@ -157,6 +152,7 @@ program
               },
             },
             false,
+            target,
           ),
           (await loadConfig())?.experimental_viteConfig?.dev ?? {},
         ),
@@ -189,41 +185,49 @@ program
       return server;
     }
 
-    const server = await startDevServer(false);
+    const server = await startDevServer(false, target);
     await server.bindCLIShortcuts({ print: true });
   });
 
 program
   .command("build")
+  .option("--cf", "Build for Cloudflare Workers instead of Node", false)
   .description("Build the project for production")
-  .action(async () => {
+  .action(async (options) => {
+    const cf = typeof options.cf === "boolean" ? options.cf : false;
     process.env.NODE_ENV = "production";
     const builder = await vite.createBuilder(
       vite.mergeConfig(
-        withTwofold({}, true),
+        withTwofold({}, true, cf ? Target.Cloudflare : Target.Node),
         (await loadConfig())?.experimental_viteConfig?.build ?? {},
       ),
     );
     await builder.buildApp();
-    await copyFile(
-      path.join(__dirname, "vite/production/server.js"),
-      path.join(process.cwd(), ".twofold/server.js"),
-    );
-    chmodSync(path.join(process.cwd(), ".twofold/server.js"), 0o775);
 
-    console.log(
-      `
+    if (cf) {
+      console.log(
+        `
+🎉 Your Twofold app was successfully built for Cloudflare.
+
+You can now deploy '${kleur["bold"](kleur["green"](`.twofold`))}' as a Cloudflare Worker ('.twofold/index.js' should be the entrypoint).
+`,
+      );
+    } else {
+      console.log(
+        `
 🎉 Your Twofold app was successfully built.
 
-You can now run '${kleur["bold"](kleur["green"](`.twofold/server.js`))}' to run your server.
+You can now run '${kleur["bold"](kleur["green"](`.twofold/index.js`))}' to run your server.
 
 You can also copy the self-contained '.twofold' folder to another location (e.g. inside a Docker container), and run your app without source code or installing node_modules.
 `,
-    );
+      );
+    }
   });
 
 program
   .command("preview")
+  .option("--cf", "Build for Cloudflare Workers instead of Node", false)
   .option(
     "-p, --port <number>",
     "Port to run the development server on",
@@ -231,6 +235,7 @@ program
   )
   .description("Preview a built production build")
   .action(async (options) => {
+    const cf = typeof options.cf === "boolean" ? options.cf : false;
     process.env.NODE_ENV = "production";
     const port = parseInt(options.port, 10) || 3000;
     const previewServer = await vite.preview(
@@ -242,6 +247,7 @@ program
             },
           },
           true,
+          cf ? Target.Cloudflare : Target.Node,
         ),
         (await loadConfig())?.experimental_viteConfig?.preview ?? {},
       ),

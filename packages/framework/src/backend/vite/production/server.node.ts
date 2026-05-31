@@ -20,7 +20,8 @@ program
     process.env.NODE_ENV = "production";
     const port = parseInt(options.port, 10) || 3000;
 
-    const applicationRouter = (await import("./server/index.js")).default;
+    const applicationRouter = (await import("../entrypoint/entry.server"))
+      .default;
 
     const router = createRouter<NodePlatformInfo>();
 
