@@ -7,6 +7,7 @@ import {
 } from "../runtime/helpers/errors.js";
 import { tfPaths } from "./special-pages.js";
 import {
+  CfExportedHandler,
   defineServerTelemetry_requireAllHooks,
   isDefaultTelemetryBehaviour,
   ServerErrorContext,
@@ -379,7 +380,7 @@ export const serverTelemetry = defineServerTelemetry_requireAllHooks({
     return await next();
   },
 
-  async wrapCloudflareExport(_export: any) {
+  wrapCloudflareExport(_export: CfExportedHandler): CfExportedHandler {
     if (appServerTelemetry?.wrapCloudflareExport) {
       return appServerTelemetry.wrapCloudflareExport(_export);
     }

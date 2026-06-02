@@ -143,6 +143,15 @@ export function isDefaultTelemetryBehaviour(
   );
 }
 
+type CfExportedHandlerFetchHandler = (
+  request: Request,
+  env: unknown,
+  ctx: unknown,
+) => Response | Promise<Response>;
+export interface CfExportedHandler {
+  fetch?: CfExportedHandlerFetchHandler;
+}
+
 /**
  * Configuration of telemetry on the server.
  */
@@ -245,7 +254,7 @@ export interface ServerTelemetry {
   /**
    * Called on the export from server.cloudflare.ts, which allows you to wrap or mutate the exported fetch function for telemetry initialization.
    */
-  wrapCloudflareExport?: TelemetryHook<(_export: any) => any>;
+  wrapCloudflareExport?: (_export: CfExportedHandler) => CfExportedHandler;
 }
 
 /**
