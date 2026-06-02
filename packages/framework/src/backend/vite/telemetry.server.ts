@@ -378,4 +378,12 @@ export const serverTelemetry = defineServerTelemetry_requireAllHooks({
 
     return await next();
   },
+
+  async wrapCloudflareExport(_export: any) {
+    if (appServerTelemetry?.wrapCloudflareExport) {
+      return appServerTelemetry.wrapCloudflareExport(_export);
+    }
+
+    return _export;
+  },
 });

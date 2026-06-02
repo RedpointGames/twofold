@@ -241,6 +241,11 @@ export interface ServerTelemetry {
   continueTraceForRequest?: TelemetryHook<
     (request: Request, next: () => Promise<Response>) => Promise<Response>
   >;
+
+  /**
+   * Called on the export from server.cloudflare.ts, which allows you to wrap or mutate the exported fetch function for telemetry initialization.
+   */
+  wrapCloudflareExport?: TelemetryHook<(_export: any) => any>;
 }
 
 /**

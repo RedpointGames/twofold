@@ -1,3 +1,4 @@
+import { serverTelemetry } from "../telemetry.server";
 import cloudflareWorkersAdapter, {
   CloudflareWorkersPlatformInfo,
 } from "@hattip/adapter-cloudflare-workers/no-static";
@@ -32,6 +33,6 @@ router.use(async (context) => {
   return await applicationRouter.fetchFromContext(context);
 });
 
-export default {
+export default serverTelemetry.wrapCloudflareExport({
   fetch: cloudflareWorkersAdapter(router.buildHandler()),
-};
+});
