@@ -255,6 +255,11 @@ export interface ServerTelemetry {
    * Called on the export from server.cloudflare.ts, which allows you to wrap or mutate the exported fetch function for telemetry initialization.
    */
   wrapCloudflareExport?: (_export: CfExportedHandler) => CfExportedHandler;
+
+  /**
+   * Returns the secret key used for encryption and decryption. Defaults to TWOFOLD_SECRET_KEY on Node.js, but must be overridden in other environments.
+   */
+  getSecretKey?: TelemetryHook<() => Promise<string>>;
 }
 
 /**

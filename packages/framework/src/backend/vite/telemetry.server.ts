@@ -14,6 +14,7 @@ import {
   ServerTracingContext,
 } from "./telemetry.js";
 import appServerTelemetry from "virtual:twofold/telemetry-server";
+import { env } from "@twofold/framework/env";
 
 function logError(context: ServerErrorContext, isCatastrophic?: boolean) {
   const defaultCategory = isCatastrophic
@@ -386,5 +387,17 @@ export const serverTelemetry = defineServerTelemetry_requireAllHooks({
     }
 
     return _export;
+  },
+
+  async getSecretKey() {
+    if (appServerTelemetry?.getSecretKey) {
+      return await appServerTelemetry.getSecretKey();
+    }
+
+    const key = env.TWOFOLD_SECRET_KEY;
+    if (typeof key !== "string") {
+      throw new Error("TWOFOLD_SECRET_KEY is not set");
+    }
+    return key;
   },
 });

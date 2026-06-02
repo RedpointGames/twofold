@@ -78,7 +78,6 @@ import {
 import merge from "deepmerge";
 import { isPlainObject } from "is-plain-object";
 import { Rewrite } from "../build/rsc/rewrite.js";
-import { env } from "@twofold/framework/env";
 
 let { h64Raw } = await xxhash();
 
@@ -256,21 +255,25 @@ export class ApplicationRuntime {
           outgoingCookies: () => ctx.outgoingCookies,
         },
         encryption: {
-          encrypt: (value) => {
-            let key = env.TWOFOLD_SECRET_KEY;
+          encrypt: async (value) => {
+            const key = await serverTelemetry.getSecretKey();
             if (typeof key !== "string") {
-              throw new Error("TWOFOLD_SECRET_KEY is not set");
+              throw new Error(
+                "serverTelemetry.getSecretKey() did not return a string value (is TWOFOLD_SECRET_KEY set?)",
+              );
             }
 
-            return encrypt(value, key);
+            return await encrypt(value, key);
           },
-          decrypt: (value) => {
-            let key = env.TWOFOLD_SECRET_KEY;
+          decrypt: async (value) => {
+            const key = await serverTelemetry.getSecretKey();
             if (typeof key !== "string") {
-              throw new Error("TWOFOLD_SECRET_KEY is not set");
+              throw new Error(
+                "serverTelemetry.getSecretKey() did not return a string value (is TWOFOLD_SECRET_KEY set?)",
+              );
             }
 
-            return decrypt(value, key);
+            return await decrypt(value, key);
           },
         },
         flash: {
