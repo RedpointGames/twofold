@@ -241,6 +241,11 @@ export default function Nav() {
                         href="/http/external"
                       />
                       <ExampleLink
+                        title="Env"
+                        description="Access environment variables"
+                        href="/http/env"
+                      />
+                      <ExampleLink
                         title="Slow page"
                         description="Navigation progress during a slow page load"
                         href="/http/slow"

@@ -27,6 +27,11 @@
     "./use-optimistic-route": "./src/client/hooks/use-optimistic-route.ts",
     "./cookies": "./src/client/http/cookies.ts",
     "./crypto": "./src/client/http/crypto.ts",
+    "./env": {
+      "types": "./src/client/http/env.d.ts",
+      "node": "./src/client/http/env.node.ts",
+      "workerd": "./src/client/http/env.cloudflare.ts"
+    },
     "./headers": "./src/client/http/headers.ts",
     "./auth": "./src/client/http/auth.ts",
     "./auth-server": "./src/client/http/auth-server.ts",
@@ -68,6 +73,7 @@
     "node": ">=22.20.0"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260601.1",
     "@eslint/js": "^10.0.1",
     "@rolldown/pluginutils": "1.0.0-rc.17",
     "@types/babel__core": "^7.20.5",

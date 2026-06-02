@@ -78,6 +78,7 @@ import {
 import merge from "deepmerge";
 import { isPlainObject } from "is-plain-object";
 import { Rewrite } from "../build/rsc/rewrite.js";
+import { env } from "@twofold/framework/env";
 
 let { h64Raw } = await xxhash();
 
@@ -256,7 +257,7 @@ export class ApplicationRuntime {
         },
         encryption: {
           encrypt: (value) => {
-            let key = process.env.TWOFOLD_SECRET_KEY;
+            let key = env.TWOFOLD_SECRET_KEY;
             if (typeof key !== "string") {
               throw new Error("TWOFOLD_SECRET_KEY is not set");
             }
@@ -264,7 +265,7 @@ export class ApplicationRuntime {
             return encrypt(value, key);
           },
           decrypt: (value) => {
-            let key = process.env.TWOFOLD_SECRET_KEY;
+            let key = env.TWOFOLD_SECRET_KEY;
             if (typeof key !== "string") {
               throw new Error("TWOFOLD_SECRET_KEY is not set");
             }
