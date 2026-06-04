@@ -72,7 +72,7 @@ function logError(
       );
     } else if (isRedirectError(context.error)) {
       const redirectError = redirectErrorInfo(context.error);
-      console.error(
+      console.log(
         `${kleur["cyan"](`[Redirect]`)}%s %s -> %s`,
         location,
         context.url,
