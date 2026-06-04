@@ -35,6 +35,28 @@ export interface ServerErrorContext {
 }
 
 /**
+ * Context provided when catastrophic errors are caught on the server.
+ */
+export interface ServerCatastrophicErrorContext {
+  applicationRuntime: ApplicationRuntime;
+  url: URL;
+  request: Request;
+  error: unknown;
+  willRecover: boolean;
+  location:
+    | "api-middleware"
+    | "api"
+    | "page-middleware"
+    | "page"
+    | "action-request"
+    | "action-form"
+    | "ssr"
+    | "client-asset"
+    | undefined;
+  authExtendedInfo?: ServerErrorContextAuthExtendedInfo;
+}
+
+/**
  * Context for tracing events on the server.
  */
 export interface ServerTracingContext {
@@ -160,7 +182,9 @@ export interface ServerTelemetry {
    * Called when there is a catastrophic error in the HTTP pipeline that prevents us from handling an error in any other way.
    */
   onServerSideCatastrophicError?: TelemetryHook<
-    (context: ServerErrorContext) => Promise<TelemetryDefaultable<void>>
+    (
+      context: ServerCatastrophicErrorContext,
+    ) => Promise<TelemetryDefaultable<void>>
   >;
 
   /**

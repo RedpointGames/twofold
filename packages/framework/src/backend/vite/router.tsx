@@ -157,7 +157,7 @@ export class ApplicationRuntime {
         await serverTelemetry.onServerSideCatastrophicError({
           applicationRuntime: this,
           url: new URL(request.url),
-          renderRequest: await parseRenderRequest(request),
+          request,
           error,
           willRecover: false,
           location: undefined,

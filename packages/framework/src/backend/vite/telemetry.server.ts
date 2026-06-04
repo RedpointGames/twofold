@@ -10,13 +10,17 @@ import {
   CfExportedHandler,
   defineServerTelemetry_requireAllHooks,
   isDefaultTelemetryBehaviour,
+  ServerCatastrophicErrorContext,
   ServerErrorContext,
   ServerTracingContext,
 } from "./telemetry.js";
 import appServerTelemetry from "virtual:twofold/telemetry-server";
 import { env } from "@twofold/framework/env";
 
-function logError(context: ServerErrorContext, isCatastrophic?: boolean) {
+function logError(
+  context: ServerErrorContext | ServerCatastrophicErrorContext,
+  isCatastrophic?: boolean,
+) {
   const defaultCategory = isCatastrophic
     ? "Catastrophic"
     : "Internal server error";
@@ -92,7 +96,7 @@ function logError(context: ServerErrorContext, isCatastrophic?: boolean) {
 }
 
 export const serverTelemetry = defineServerTelemetry_requireAllHooks({
-  async onServerSideCatastrophicError(context: ServerErrorContext) {
+  async onServerSideCatastrophicError(context: ServerCatastrophicErrorContext) {
     if (appServerTelemetry?.onServerSideCatastrophicError) {
       let appResult =
         await appServerTelemetry.onServerSideCatastrophicError(context);
