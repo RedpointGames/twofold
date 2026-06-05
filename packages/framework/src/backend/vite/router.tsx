@@ -337,7 +337,7 @@ export class ApplicationRuntime {
     // handle all requests here
     app.use(async (ctx) => {
       const renderRequest = await parseRenderRequest(ctx.request);
-      const request = new ProxyingRequest(renderRequest.request);
+      const request = ProxyingRequest.createFromRequest(renderRequest.request);
       const url = new URL(request.url);
 
       // Perform rewrites.
@@ -533,7 +533,7 @@ export class ApplicationRuntime {
       });
     }
 
-    const request = new ProxyingRequest(ctx.request);
+    const request = ProxyingRequest.createFromRequest(ctx.request);
     const authResponse = await evaluatePolicyArray(applicableAuthEntity, {
       type: "client-asset",
       request,

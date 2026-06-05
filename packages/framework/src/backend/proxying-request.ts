@@ -1,6 +1,6 @@
 /**
  * When authentication policies inspect the request, such as by calling formData(), it causes server actions to fail to bind arguments to FormData because the formData has already been read.
- * 
+ *
  * This implementation proxies a request and caches the first Promise<> result from those functions, so that code does not need to be aware of whether the body has already been read by an authentication policy.
  */
 export class ProxyingRequest implements Request {
@@ -12,7 +12,11 @@ export class ProxyingRequest implements Request {
   #json: Promise<any> | undefined;
   #text: Promise<string> | undefined;
 
-  constructor(original: Request) {
+  static createFromRequest(original: Request): Request {
+    return new ProxyingRequest(original) as unknown as Request;
+  }
+
+  private constructor(original: Request) {
     this.#original = original;
   }
 
@@ -55,34 +59,36 @@ export class ProxyingRequest implements Request {
   get referrer(): string {
     return this.#original.referrer;
   }
-  
+
   get referrerPolicy(): ReferrerPolicy {
     return this.#original.referrerPolicy;
   }
-  
+
   get signal(): AbortSignal {
     return this.#original.signal;
   }
-  
+
   get url(): string {
     return this.#original.url;
   }
-  
+
   get body(): ReadableStream<Uint8Array<ArrayBuffer>> | null {
     return this.#original.body;
   }
-  
+
   get bodyUsed(): boolean {
     return this.#original.bodyUsed;
   }
-  
+
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore Cloudflare's worker-configuration.d.ts will conflict with this definition because we're not implementing all of the Cloudflare request internals.
   clone(): Request {
-    return new ProxyingRequest(this.#original.clone());
+    return ProxyingRequest.createFromRequest(this.#original.clone() as any);
   }
 
   arrayBuffer(): Promise<ArrayBuffer> {
     if (this.#arrayBuffer) {
-       return this.#arrayBuffer;
+      return this.#arrayBuffer;
     }
     this.#arrayBuffer = this.#original.arrayBuffer();
     return this.#arrayBuffer;
@@ -90,7 +96,7 @@ export class ProxyingRequest implements Request {
 
   blob(): Promise<Blob> {
     if (this.#blob) {
-       return this.#blob;
+      return this.#blob;
     }
     this.#blob = this.#original.blob();
     return this.#blob;
@@ -98,15 +104,15 @@ export class ProxyingRequest implements Request {
 
   bytes(): Promise<Uint8Array<ArrayBuffer>> {
     if (this.#bytes) {
-       return this.#bytes;
+      return this.#bytes;
     }
-    this.#bytes = this.#original.bytes();
+    this.#bytes = this.#original.bytes() as Promise<Uint8Array<ArrayBuffer>>;
     return this.#bytes;
   }
 
   formData(): Promise<FormData> {
     if (this.#formData) {
-       return this.#formData;
+      return this.#formData;
     }
     this.#formData = this.#original.formData();
     return this.#formData;
@@ -114,7 +120,7 @@ export class ProxyingRequest implements Request {
 
   json(): Promise<any> {
     if (this.#json) {
-       return this.#json;
+      return this.#json;
     }
     this.#json = this.#original.json();
     return this.#json;
@@ -122,7 +128,7 @@ export class ProxyingRequest implements Request {
 
   text(): Promise<string> {
     if (this.#text) {
-       return this.#text;
+      return this.#text;
     }
     this.#text = this.#original.text();
     return this.#text;
