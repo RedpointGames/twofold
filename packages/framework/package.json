@@ -73,7 +73,7 @@
     "node": ">=22.20.0"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20260601.1",
+    "@cloudflare/workers-types": "^4.20260604.1",
     "@eslint/js": "^10.0.1",
     "@rolldown/pluginutils": "1.0.0-rc.17",
     "@types/babel__core": "^7.20.5",
