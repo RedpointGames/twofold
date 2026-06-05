@@ -75,7 +75,7 @@
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260601.1",
     "@eslint/js": "^10.0.1",
-    "@rolldown/pluginutils": "1.0.0-rc.17",
+    "@rolldown/pluginutils": "1.0.1",
     "@types/babel__core": "^7.20.5",
     "@types/etag": "^1.8.4",
     "@types/mime-types": "^3.0.1",
