@@ -15,7 +15,7 @@ catalog:
   esbuild: 0.28.1
   react: 19.3.0
   react-dom: 19.2.6
-  react-server-dom-webpack: 19.2.6
+  react-server-dom-webpack: 19.2.8
   typescript: ^5.9.3
 
 onlyBuiltDependencies:
