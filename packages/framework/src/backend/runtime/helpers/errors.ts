@@ -7,6 +7,15 @@ export function isNotFoundError(err: unknown) {
   );
 }
 
+export function isNoConnectionError(err: unknown) {
+  return (
+    err instanceof Error &&
+    "digest" in err &&
+    typeof err.digest === "string" &&
+    err.digest === "TwofoldNoConnectionError"
+  );
+}
+
 export function isRedirectError(err: unknown) {
   return (
     err instanceof Error &&
@@ -69,5 +78,15 @@ export class NotFoundError extends Error {
 
   constructor() {
     super("TwofoldNotFoundError");
+  }
+}
+
+export class NoConnectionError extends Error {
+  isTwofoldError = true;
+  name = "TwofoldNoConnectionError";
+  digest = "TwofoldNoConnectionError";
+
+  constructor() {
+    super("TwofoldNoConnectionError");
   }
 }

@@ -1,5 +1,6 @@
 import kleur from "kleur";
 import {
+  isNoConnectionError,
   isNotFoundError,
   isRedirectError,
   isUnauthorizedError,
@@ -64,6 +65,12 @@ function logError(
         location,
         context.url,
       );
+    } else if (isNoConnectionError(context.error)) {
+      console.error(
+        `${kleur["red"](`[No connection]`)}%s %s`,
+        location,
+        context.url,
+      );
     } else if (isUnauthorizedError(context.error)) {
       console.error(
         `${kleur["red"](`[Unauthorized]`)}%s %s`,
@@ -120,6 +127,8 @@ export const serverTelemetry = defineServerTelemetry_requireAllHooks({
 
     if (isNotFoundError(context.error)) {
       return new Response("Not found", { status: 404 });
+    } else if (isNoConnectionError(context.error)) {
+      return new Response("Service Unavailable", { status: 503 });
     } else if (isUnauthorizedError(context.error)) {
       return new Response("Unauthorized", { status: 401 });
     } else if (isRedirectError(context.error)) {
@@ -150,6 +159,11 @@ export const serverTelemetry = defineServerTelemetry_requireAllHooks({
       return context.applicationRuntime.noAuthChecks_runSpecialPage(
         context.renderRequest,
         tfPaths.throwing.notFound,
+      );
+    } else if (isNoConnectionError(context.error)) {
+      return context.applicationRuntime.noAuthChecks_runSpecialPage(
+        context.renderRequest,
+        tfPaths.throwing.noConnection,
       );
     } else if (isUnauthorizedError(context.error)) {
       return context.applicationRuntime.noAuthChecks_runSpecialPage(
@@ -217,6 +231,11 @@ export const serverTelemetry = defineServerTelemetry_requireAllHooks({
       return await context.applicationRuntime.noAuthChecks_runSpecialPage(
         context.renderRequest,
         tfPaths.throwing.notFound,
+      );
+    } else if (isNoConnectionError(context.error)) {
+      return await context.applicationRuntime.noAuthChecks_runSpecialPage(
+        context.renderRequest,
+        tfPaths.throwing.noConnection,
       );
     } else if (
       isUnauthorizedError(context.error) &&
@@ -301,6 +320,11 @@ export const serverTelemetry = defineServerTelemetry_requireAllHooks({
         context.renderRequest,
         tfPaths.throwing.notFound,
       );
+    } else if (isNoConnectionError(context.error)) {
+      return context.applicationRuntime.noAuthChecks_runSpecialPage(
+        context.renderRequest,
+        tfPaths.throwing.noConnection,
+      );
     } else if (isUnauthorizedError(context.error)) {
       return context.applicationRuntime.noAuthChecks_runSpecialPage(
         context.renderRequest,
@@ -334,6 +358,8 @@ export const serverTelemetry = defineServerTelemetry_requireAllHooks({
 
     if (isNotFoundError(context.error)) {
       return new Response("Not Found", { status: 404 });
+    } else if (isNoConnectionError(context.error)) {
+      return new Response("Service Unavailable", { status: 503 });
     } else if (isUnauthorizedError(context.error)) {
       return new Response("Unauthorized", { status: 401 });
     } else if (isRedirectError(context.error)) {
