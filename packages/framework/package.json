@@ -150,7 +150,7 @@
     "server-only": "^0.0.1",
     "stacktrace-parser": "^0.1.11",
     "urlpattern-polyfill": "10.1.0",
-    "vite": "^8.0.10",
+    "vite": "^8.3.4",
     "xxhash-wasm": "^1.1.0",
     "zod": "^4.4.3"
   }
