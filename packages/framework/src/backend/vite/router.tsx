@@ -1213,6 +1213,8 @@ export class ApplicationRuntime {
     let overrideStatus;
     if (specialPage === tfPaths.throwing.notFound) {
       overrideStatus = 404;
+    } else if (specialPage === tfPaths.throwing.noConnection) {
+      overrideStatus = 503;
     } else if (specialPage === tfPaths.throwing.unauthorized) {
       overrideStatus = 403;
     } else if (specialPage === tfPaths.throwing.internalServerError) {
@@ -1512,6 +1514,8 @@ export class ApplicationRuntime {
     const specialPages = {
       [tfPaths.throwing.notFound]: () =>
         import("../../client/pages/not-found.js"),
+      [tfPaths.throwing.noConnection]: () =>
+        import("../../client/pages/no-connection.js"),
       [tfPaths.throwing.unauthorized]: () =>
         import("../../client/pages/unauthorized.js"),
       [tfPaths.throwing.internalServerError]: () =>

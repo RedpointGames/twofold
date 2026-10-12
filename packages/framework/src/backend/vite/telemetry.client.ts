@@ -1,4 +1,5 @@
 import {
+  isNoConnectionError,
   isNotFoundError,
   isRedirectError,
   isUnauthorizedError,
@@ -23,6 +24,7 @@ export const clientTelemetry = defineClientTelemetry_requireAllHooks({
 
     if (
       isNotFoundError(context.error) ||
+      isNoConnectionError(context.error) ||
       isUnauthorizedError(context.error) ||
       isRedirectError(context.error)
     ) {

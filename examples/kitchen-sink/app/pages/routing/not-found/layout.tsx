@@ -33,6 +33,14 @@ export default function Layout({ children }: { children: ReactNode }) {
           </li>
           <li>
             <Link
+              href="/routing/not-found/custom-no-connection"
+              className="text-blue-500 underline"
+            >
+              Custom no connection
+            </Link>
+          </li>
+          <li>
+            <Link
               href="/routing/not-found/async-page-calls-not-found"
               className="text-blue-500 underline"
             >

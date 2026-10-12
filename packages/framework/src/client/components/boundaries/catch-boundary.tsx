@@ -69,6 +69,7 @@ export default class CatchBoundary extends Component<Props, State> {
   static #digestToTag: Record<string, string> = {
     TwofoldUnauthorizedError: "unauthorized",
     TwofoldNotFoundError: "not-found",
+    TwofoldNoConnectionError: "no-connection",
   };
 
   render() {
